@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DefaultContext, State, Machine } from 'xstate';
+import { DefaultContext, State, Machine, MachineOptions, EventObject, StateSchema, MachineConfig } from 'xstate';
 
 interface HOCState {
     currentState: State<DefaultContext>;
@@ -14,11 +14,11 @@ export interface InjectedProps {
     currentState: State<DefaultContext>;
 }
 
-export const withStateMachine = <TOriginalProps extends {}>(Component: (React.ComponentClass<TOriginalProps & InjectedProps> | React.StatelessComponent<TOriginalProps & InjectedProps>), stateChart: any) => {
+export const withStateMachine = <TOriginalProps extends {}, TContext = DefaultContext, TStateSchema extends StateSchema = any, TEvent extends EventObject = EventObject>(Component: (React.ComponentClass<TOriginalProps & InjectedProps> | React.StatelessComponent<TOriginalProps & InjectedProps>), config: MachineConfig<TContext, TStateSchema, TEvent>, options: MachineOptions<TContext, TEvent>) => {
     type ResultProps = TOriginalProps & ExternalProps;
     return class StateMachine extends React.Component<ResultProps, HOCState> {
 
-        private stateMachine = Machine<undefined, {}>(stateChart);
+        private stateMachine = Machine(config, options);
 
         public readonly state = {
             currentState: this.stateMachine.initialState

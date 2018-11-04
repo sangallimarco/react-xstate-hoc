@@ -1,15 +1,19 @@
 import * as React from 'react';
 import { withStateMachine, InjectedProps } from '../state-machine-component';
 
-const MachineState = {
-    START: 'START',
-    PROCESSING: 'PROCESSING',
-    END: 'END'
+enum MachineState {
+    START = 'START',
+    PROCESSING = 'PROCESSING',
+    END = 'END'
 }
 
-const MachineAction = {
-    SUBMIT: 'SUBMIT',
-    CANCEL: 'CANCEL'
+enum MachineAction {
+    SUBMIT = 'SUBMIT',
+    CANCEL = 'CANCEL'
+}
+
+enum MachineTrigger {
+    LOAD = 'LOAD'
 }
 
 const STATE_CHART = {
@@ -19,13 +23,21 @@ const STATE_CHART = {
             on: {
                 [MachineAction.SUBMIT]: MachineState.PROCESSING
             },
-            onEntry: 'sayHello'
+            onEntry: MachineTrigger.LOAD
         },
         [MachineState.PROCESSING]: {
             on: {
                 [MachineAction.CANCEL]: MachineState.START
             },
-            onEntry: 'sayCiao'
+            onEntry: MachineTrigger.LOAD
+        }
+    }
+}
+
+const STATE_ACTIONS = {
+    actions: {
+        [MachineTrigger.LOAD]: () => {
+            console.log('ok!');
         }
     }
 }
@@ -53,4 +65,4 @@ export class TestBaseComponent extends React.Component<TestComponentProps & Inje
     }
 }
 
-export const TestComponent = withStateMachine(TestBaseComponent, STATE_CHART);
+export const TestComponent = withStateMachine(TestBaseComponent, STATE_CHART, STATE_ACTIONS);
