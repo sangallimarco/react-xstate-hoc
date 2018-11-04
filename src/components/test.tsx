@@ -1,43 +1,58 @@
 import * as React from 'react';
 import { withStateMachine, InjectedProps } from '../state-machine-component';
 
-enum MachineState {
-    START = 'START',
-    PROCESSING = 'PROCESSING',
-    END = 'END'
+const MachineState = {
+    START: 'START',
+    PROCESSING: 'PROCESSING',
+    END: 'END'
 }
 
-enum MachineAction {
-    SUBMIT = 'SUBMIT',
-    CANCEL = 'CANCEL'
+const MachineAction = {
+    SUBMIT: 'SUBMIT',
+    CANCEL: 'CANCEL'
 }
 
-enum MachineTrigger {
-    LOAD = 'LOAD'
+const MachineTrigger = {
+    LOAD: 'LOAD'
+}
+
+interface Context {
+    items: string[]
+}
+
+const CONTEXT: Context = {
+    items: []
 }
 
 const STATE_CHART = {
     initial: MachineState.START,
+    context: CONTEXT,
     states: {
         [MachineState.START]: {
             on: {
-                [MachineAction.SUBMIT]: MachineState.PROCESSING
-            },
-            onEntry: MachineTrigger.LOAD
+                [MachineAction.SUBMIT]: {
+                    target: MachineState.PROCESSING,
+                    actions: MachineTrigger.LOAD
+                }
+            }
         },
         [MachineState.PROCESSING]: {
             on: {
-                [MachineAction.CANCEL]: MachineState.START
-            },
-            onEntry: MachineTrigger.LOAD
+                [MachineAction.CANCEL]: {
+                    target: MachineState.START,
+                    actions: [MachineTrigger.LOAD]
+                }
+            }
         }
     }
 }
 
 const STATE_ACTIONS = {
     actions: {
-        [MachineTrigger.LOAD]: () => {
-            console.log('ok!');
+        [MachineTrigger.LOAD]: (ctx: Context) => {
+            setTimeout(() => {
+                ctx.items = ['ok'];
+            }, 2000);
         }
     }
 }

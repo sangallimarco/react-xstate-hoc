@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { DefaultContext, State, Machine, MachineOptions, EventObject, StateSchema, MachineConfig } from 'xstate';
+import { interpret } from 'xstate/lib/interpreter';
 
 interface HOCState {
     currentState: State<DefaultContext>;
@@ -19,6 +20,8 @@ export const withStateMachine = <TOriginalProps extends {}, TContext = DefaultCo
     return class StateMachine extends React.Component<ResultProps, HOCState> {
 
         private stateMachine = Machine(config, options);
+        private service = interpret(this.stateMachine)
+            .onTransition(currentState => this.setState({ currentState }));
 
         public readonly state = {
             currentState: this.stateMachine.initialState
@@ -28,21 +31,25 @@ export const withStateMachine = <TOriginalProps extends {}, TContext = DefaultCo
             super(props);
         }
 
+        public componentDidMount() {
+            this.service.start();
+        }
+
+        public componentWillUnmount() {
+            this.service.stop();
+        }
+
         public render(): JSX.Element {
             return (
                 <Component {...this.props} {...this.state} dispatch={this.dispatch} />
             );
         }
 
-        protected dispatch = (action: string) => {
-            const { currentState } = this.state;
-            if (currentState && this.stateMachine) {
-                const { value } = currentState as State<DefaultContext>;
-                const newState = this.stateMachine.transition(value, action);
-                if (newState.changed) {
-                    this.setState({ currentState: newState });
-                }
-            }
+        protected dispatch = (actionName: string) => {
+            this.service.send(actionName);
         }
+
+        // private async executeAction(action: ActionObject<TContext>) {
+        // }
     };
 };
