@@ -2,33 +2,52 @@ import * as React from 'react';
 import { DefaultContext, State, Machine, MachineOptions, EventObject, StateSchema, MachineConfig } from 'xstate';
 import { interpret } from 'xstate/lib/interpreter';
 
-interface HOCState {
-    currentState: State<DefaultContext>;
+interface HOCState<T> {
+    currentState: State<any>; // @TODO fix it
+    context: T | undefined;
 }
 
-interface ExternalProps {
-    style?: React.CSSProperties;
-}
-
-export interface InjectedProps {
+export interface InjectedProps<T> extends HOCState<T> {
     dispatch: (action: string) => void;
-    currentState: State<DefaultContext>;
 }
 
-export const withStateMachine = <TOriginalProps extends {}, TContext = DefaultContext, TStateSchema extends StateSchema = any, TEvent extends EventObject = EventObject>(Component: (React.ComponentClass<TOriginalProps & InjectedProps> | React.StatelessComponent<TOriginalProps & InjectedProps>), config: MachineConfig<TContext, TStateSchema, TEvent>, options: MachineOptions<TContext, TEvent>) => {
-    type ResultProps = TOriginalProps & ExternalProps;
-    return class StateMachine extends React.Component<ResultProps, HOCState> {
+type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
+type Subtract<T, K> = Omit<T, keyof K>;
+
+export const withStateMachine = <
+    TOriginalProps,
+    TContext = DefaultContext,
+    TStateSchema extends StateSchema = any,
+    TEvent extends EventObject = EventObject
+    >(
+        Component: (
+            React.ComponentClass<TOriginalProps & InjectedProps<TContext>> |
+            React.StatelessComponent<TOriginalProps & InjectedProps<TContext>>),
+        config: MachineConfig<TContext, TStateSchema, TEvent>,
+        options: MachineOptions<TContext, TEvent>
+    ) => {
+
+    return class StateMachine extends React.Component<
+        Subtract<TOriginalProps, InjectedProps<TContext>>
+        , HOCState<TContext>
+        > {
 
         private stateMachine = Machine(config, options);
-        private service = interpret(this.stateMachine)
-            .onTransition(currentState => this.setState({ currentState }));
+        private service = interpret(this.stateMachine);
 
         public readonly state = {
-            currentState: this.stateMachine.initialState
+            currentState: this.stateMachine.initialState,
+            context: this.stateMachine.context
         }
 
-        constructor(props: ResultProps) {
+        constructor(props: TOriginalProps) {
             super(props);
+            this.service.onTransition(currentState => {
+                this.setState({ currentState })
+            });
+            this.service.onChange((context: TContext) => {
+                this.setState({ context })
+            });
         }
 
         public componentDidMount() {
@@ -45,7 +64,7 @@ export const withStateMachine = <TOriginalProps extends {}, TContext = DefaultCo
             );
         }
 
-        protected dispatch = (actionName: string) => {
+        public dispatch = (actionName: string) => {
             this.service.send(actionName);
         }
 
