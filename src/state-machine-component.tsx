@@ -1,61 +1,47 @@
 import * as React from 'react';
-import { DefaultContext, State, Machine, MachineOptions, EventObject, StateSchema, MachineConfig } from 'xstate';
-import { interpret } from 'xstate/lib/interpreter';
+import { DefaultContext, State, Machine, EventObject, StateSchema, MachineConfig, StateValue } from 'xstate';
 
-interface HOCState<T> {
+interface HOCState<TOriginalState> {
     currentState: State<any>; // @TODO fix it
-    context: T | undefined;
+    context: TOriginalState
 }
 
-export interface InjectedProps<T> extends HOCState<T> {
+export interface InjectedProps<TOriginalState> extends HOCState<TOriginalState> {
     dispatch: (action: string) => void;
 }
+
+export type Action<TOriginalState> = Map<string, () => Promise<Partial<TOriginalState>>>; // do better here
 
 type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
 type Subtract<T, K> = Omit<T, keyof K>;
 
 export const withStateMachine = <
     TOriginalProps,
-    TContext = DefaultContext,
+    TOriginalState extends {} = {},
     TStateSchema extends StateSchema = any,
     TEvent extends EventObject = EventObject
     >(
         Component: (
-            React.ComponentClass<TOriginalProps & InjectedProps<TContext>> |
-            React.StatelessComponent<TOriginalProps & InjectedProps<TContext>>),
-        config: MachineConfig<TContext, TStateSchema, TEvent>,
-        options: MachineOptions<TContext, TEvent>
+            React.ComponentClass<TOriginalProps & InjectedProps<TOriginalState>> |
+            React.StatelessComponent<TOriginalProps & InjectedProps<TOriginalState>>),
+        config: MachineConfig<DefaultContext, TStateSchema, TEvent>,
+        context: TOriginalState,
+        actions?: Action<TOriginalState>
     ) => {
 
-    return class StateMachine extends React.Component<
-        Subtract<TOriginalProps, InjectedProps<TContext>>
-        , HOCState<TContext>
-        > {
+    type WrapperProps = Subtract<TOriginalProps, InjectedProps<TOriginalState>>;
 
-        private stateMachine = Machine(config, options);
-        private service = interpret(this.stateMachine);
+    return class StateMachine extends React.Component<WrapperProps, HOCState<TOriginalState>> {
 
-        public readonly state = {
+        private stateMachine = Machine(config);
+
+        public readonly state: HOCState<TOriginalState> = {
             currentState: this.stateMachine.initialState,
-            context: this.stateMachine.context
+            context
         }
 
         constructor(props: TOriginalProps) {
             super(props);
-            this.service.onTransition(currentState => {
-                this.setState({ currentState })
-            });
-            this.service.onChange((context: TContext) => {
-                this.setState({ context })
-            });
-        }
-
-        public componentDidMount() {
-            this.service.start();
-        }
-
-        public componentWillUnmount() {
-            this.service.stop();
         }
 
         public render(): JSX.Element {
@@ -65,10 +51,24 @@ export const withStateMachine = <
         }
 
         public dispatch = (actionName: string) => {
-            this.service.send(actionName);
+            const { currentState: { value } } = this.state;
+            const newState = this.stateMachine.transition(value, actionName);
+            if (newState.changed) {
+                const { value: stateName } = newState;
+                this.setState({ currentState: newState });
+                this.execute(stateName);
+            }
         }
 
-        // private async executeAction(action: ActionObject<TContext>) {
-        // }
+        private async execute(actionName: StateValue) {
+            if (actions) {
+                const action = actions.get(actionName as string);
+                if (action) {
+                    const newContext = await action() as any;
+                    const { context: prevContext } = this.state as any;
+                    this.setState({ context: { ...prevContext, ...newContext } });
+                }
+            }
+        }
     };
 };

@@ -1,7 +1,5 @@
 import * as React from 'react';
 import { withStateMachine, InjectedProps } from '../state-machine-component';
-import { actions } from 'xstate';
-const { raise } = actions;
 
 const MachineState = {
     START: 'START',
@@ -16,29 +14,19 @@ const MachineAction = {
     AUTO: 'AUTO'
 }
 
-const MachineTrigger = {
-    LOAD: 'LOAD',
-    FAKE_LOAD: 'FAKE_LOAD'
-}
-
-interface Context {
-    items: string[]
-}
-
-const CONTEXT: Context = {
-    items: []
-}
+// const MachineTrigger = {
+//     LOAD: 'LOAD',
+//     FAKE_LOAD: 'FAKE_LOAD'
+// }
 
 const STATE_CHART = {
     initial: MachineState.START,
-    context: CONTEXT,
     states: {
         [MachineState.START]: {
             on: {
                 [MachineAction.SUBMIT]: {
                     target: MachineState.PROCESSING,
                     actions: [
-                        MachineTrigger.LOAD
                     ]
                 }
             }
@@ -69,19 +57,26 @@ function fakeAJAX() {
     );
 }
 
-const STATE_ACTIONS = {
-    actions: {
-        [MachineTrigger.LOAD]: async (ctx: Context) => {
+const STATE_ACTIONS = new Map([
+    [
+        MachineState.PROCESSING,
+        async () => {
             const res = await fakeAJAX();
-            ctx.items = res;
-            raise(MachineAction.AUTO);
-        },
-        [MachineTrigger.FAKE_LOAD]: (ctx: Context) => { ctx.items = ['ok'] }
-    }
+            return { items: res };
+        }
+    ]
+]);
+
+interface TestComponentState {
+    items: string[];
 }
 
-interface TestComponentProps extends InjectedProps<Context> {
+interface TestComponentProps extends InjectedProps<TestComponentState> {
     label?: string;
+}
+
+const state: TestComponentState = {
+    items: []
 }
 
 export class TestBaseComponent extends React.Component<TestComponentProps, {}> {
@@ -89,7 +84,7 @@ export class TestBaseComponent extends React.Component<TestComponentProps, {}> {
     public render() {
         const { currentState, context } = this.props;
 
-        if (currentState && context) {
+        if (currentState) {
             return <div>
                 <h1>{currentState.value}</h1>
                 <ul>
@@ -111,4 +106,4 @@ export class TestBaseComponent extends React.Component<TestComponentProps, {}> {
     }
 }
 
-export const TestComponent = withStateMachine(TestBaseComponent, STATE_CHART, STATE_ACTIONS);
+export const TestComponent = withStateMachine(TestBaseComponent, STATE_CHART, state, STATE_ACTIONS);
