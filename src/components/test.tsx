@@ -1,88 +1,12 @@
 import * as React from 'react';
-import { withStateMachine, InjectedProps, Action } from '../state-machine-component';
-
-const MachineState = {
-    START: 'START',
-    PROCESSING: 'PROCESSING',
-    LIST: 'LIST',
-    END: 'END'
-}
-
-const MachineAction = {
-    SUBMIT: 'SUBMIT',
-    CANCEL: 'CANCEL',
-    AUTO: 'AUTO'
-}
-
-// const MachineTrigger = {
-//     LOAD: 'LOAD',
-//     FAKE_LOAD: 'FAKE_LOAD'
-// }
-
-const STATE_CHART = {
-    initial: MachineState.START,
-    states: {
-        [MachineState.START]: {
-            on: {
-                [MachineAction.SUBMIT]: {
-                    target: MachineState.PROCESSING,
-                    actions: [
-                    ]
-                }
-            }
-        },
-        [MachineState.PROCESSING]: {
-            on: {
-                [MachineAction.AUTO]: {
-                    target: MachineState.LIST,
-                    actions: []
-                }
-            }
-        },
-        [MachineState.LIST]: {
-            on: {
-                [MachineAction.CANCEL]: {
-                    target: MachineState.START
-                }
-            }
-        }
-    }
-}
-
-// test only 
-function fakeAJAX() {
-    return new Promise<string[]>(resolve => setTimeout(() => {
-        resolve(['ok']);
-    }, 2000)
-    );
-}
-
-const STATE_ACTIONS: Action<TestComponentState> = new Map([
-    [
-        MachineState.PROCESSING,
-        async () => {
-            const res = await fakeAJAX();
-            return {
-                data: { items: res },
-                actionName: MachineAction.AUTO
-            };
-        }
-    ]
-]);
-
-interface TestComponentState {
-    items: string[];
-}
+import { withStateMachine, InjectedProps } from '../state-machine-component';
+import { TestComponentState, STATE_CHART, STATE_ACTIONS, INITIAL_STATE, MachineAction } from './test-machine';
 
 interface TestComponentProps extends InjectedProps<TestComponentState> {
     label?: string;
 }
 
-const state: TestComponentState = {
-    items: []
-}
-
-export class TestBaseComponent extends React.Component<TestComponentProps, {}> {
+export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
 
     public render() {
         const { currentState, context } = this.props;
@@ -109,4 +33,9 @@ export class TestBaseComponent extends React.Component<TestComponentProps, {}> {
     }
 }
 
-export const TestComponent = withStateMachine(TestBaseComponent, STATE_CHART, state, STATE_ACTIONS);
+export const TestComponent = withStateMachine(
+    TestBaseComponent,
+    STATE_CHART,
+    INITIAL_STATE,
+    STATE_ACTIONS
+);
