@@ -1,6 +1,6 @@
 import { Action } from '../state-machine-component';
 
-const MachineState = {
+export const MachineState = {
     START: 'START',
     PROCESSING: 'PROCESSING',
     LIST: 'LIST',
@@ -10,7 +10,9 @@ const MachineState = {
 export const MachineAction = {
     SUBMIT: 'SUBMIT',
     CANCEL: 'CANCEL',
-    AUTO: 'AUTO'
+    AUTO: 'AUTO',
+    RESET: 'RESET',
+    NONE: 'NONE'
 }
 
 export const STATE_CHART = {
@@ -20,8 +22,7 @@ export const STATE_CHART = {
             on: {
                 [MachineAction.SUBMIT]: {
                     target: MachineState.PROCESSING,
-                    actions: [
-                    ]
+                    actions: []
                 }
             }
         },
@@ -35,7 +36,7 @@ export const STATE_CHART = {
         },
         [MachineState.LIST]: {
             on: {
-                [MachineAction.CANCEL]: {
+                [MachineAction.RESET]: {
                     target: MachineState.START
                 }
             }
@@ -62,7 +63,16 @@ export const STATE_ACTIONS: Action<TestComponentState> = new Map([
             const res = await fakeAJAX();
             return {
                 data: { items: res },
-                actionName: MachineAction.AUTO
+                triggerAction: MachineAction.AUTO
+            };
+        }
+    ],
+    [
+        MachineState.START,
+        async () => {
+            return {
+                data: { items: [] },
+                triggerAction: MachineAction.NONE
             };
         }
     ]

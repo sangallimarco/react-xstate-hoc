@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DefaultContext, State, Machine, EventObject, StateSchema, MachineConfig } from 'xstate';
+import { DefaultContext, State, Machine, EventObject, StateSchema, MachineConfig, StateValue } from 'xstate';
 import { interpret } from 'xstate/lib/interpreter';
 
 interface HOCState<TOriginalState> {
@@ -11,11 +11,11 @@ export interface InjectedProps<TOriginalState> extends HOCState<TOriginalState> 
     dispatch: (action: string) => void;
 }
 
-export type Action<TOriginalState> = Map<string, () => Promise<ActionArtifact<TOriginalState>>>; // do better here
+export type Action<TOriginalState> = Map<string, () => Promise<ActionArtifact<TOriginalState>>>;
 
 export interface ActionArtifact<TOriginalState> {
-    data: Partial<TOriginalState>,
-    actionName: string
+    data: Partial<TOriginalState>;
+    triggerAction: string;
 }
 
 type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
@@ -40,7 +40,8 @@ export const withStateMachine = <
 
     return class StateMachine extends React.Component<WrapperProps, HOCState<TOriginalState>> {
 
-        private interpreter = interpret(stateMachine)
+        private interpreter = interpret(stateMachine);
+        private currentStateName: StateValue;
 
         public componentDidMount() {
             this.interpreter.start();
@@ -68,17 +69,18 @@ export const withStateMachine = <
 
         private async execute(newState: State<DefaultContext>) {
             const { changed, value } = newState;
-            if (changed) {
+            if (changed && value !== this.currentStateName) {
+                this.currentStateName = value;
                 this.setState({ currentState: newState });
                 if (actions) {
                     const action = actions.get(value as string);
                     if (action) {
                         const actionArtifact: ActionArtifact<TOriginalState> = await action();
-                        const { data, actionName } = actionArtifact;
+                        const { data, triggerAction } = actionArtifact;
                         const { context: prevContext } = this.state;
-                        this.setState({ context: { ...prevContext as any, ...data as any } });
-                        if (actionName) {
-                            this.interpreter.send(actionName);
+                        this.setState({ context: { ...prevContext as any, ...data as any } }); // use util to merge data
+                        if (triggerAction) {
+                            this.interpreter.send(triggerAction);
                         }
                     }
                 }
