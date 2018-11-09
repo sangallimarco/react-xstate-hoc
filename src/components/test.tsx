@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { withStateMachine, InjectedProps } from '../state-machine-component';
+import { withStateMachine, InjectedProps, Action } from '../state-machine-component';
 
 const MachineState = {
     START: 'START',
@@ -57,12 +57,15 @@ function fakeAJAX() {
     );
 }
 
-const STATE_ACTIONS = new Map([
+const STATE_ACTIONS: Action<TestComponentState> = new Map([
     [
         MachineState.PROCESSING,
         async () => {
             const res = await fakeAJAX();
-            return { items: res };
+            return {
+                data: { items: res },
+                actionName: MachineAction.AUTO
+            };
         }
     ]
 ]);
