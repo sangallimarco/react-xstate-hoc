@@ -3,7 +3,7 @@ import { DefaultContext, State, Machine, EventObject, StateSchema, MachineConfig
 import { interpret } from 'xstate/lib/interpreter';
 
 interface HOCState<TOriginalState> {
-    currentState: State<any>; // @TODO fix it
+    currentState: State<DefaultContext>;
     context: TOriginalState
 }
 
@@ -78,7 +78,7 @@ export const withStateMachine = <
                         const actionArtifact: ActionArtifact<TOriginalState> = await action();
                         const { data, triggerAction } = actionArtifact;
                         const { context: prevContext } = this.state;
-                        this.setState({ context: { ...prevContext as any, ...data as any } }); // use util to merge data
+                        this.setState({ context: Object.assign({}, prevContext, data) });
                         if (triggerAction) {
                             this.interpreter.send(triggerAction);
                         }
