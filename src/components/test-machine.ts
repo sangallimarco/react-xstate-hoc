@@ -4,45 +4,47 @@ export const MachineState = {
     START: 'START',
     PROCESSING: 'PROCESSING',
     LIST: 'LIST',
+    ERROR: 'ERROR',
     END: 'END'
 }
 
 export const MachineAction = {
     SUBMIT: 'SUBMIT',
     CANCEL: 'CANCEL',
-    AUTO: 'AUTO',
+    PROCESSED: 'PROCESSED',
+    ERROR: 'ERROR',
     RESET: 'RESET',
     NONE: 'NONE'
 }
 
+// this can be visualised here: https://musing-rosalind-2ce8e7.netlify.com/?machine=%7B%22initial%22%3A%22START%22%2C%22states%22%3A%7B%22START%22%3A%7B%22on%22%3A%7B%22SUBMIT%22%3A%22PROCESSING%22%7D%7D%2C%22PROCESSING%22%3A%7B%22on%22%3A%7B%22PROCESSED%22%3A%22LIST%22%2C%22ERROR%22%3A%22ERROR%22%7D%7D%2C%22LIST%22%3A%7B%22on%22%3A%7B%22RESET%22%3A%22START%22%7D%7D%2C%22ERROR%22%3A%7B%22on%22%3A%7B%22RESET%22%3A%22START%22%7D%7D%7D%7D
+
 export const STATE_CHART = {
-    initial: MachineState.START,
+    initial: 'START',
     states: {
-        [MachineState.START]: {
+        START: {
             on: {
-                [MachineAction.SUBMIT]: {
-                    target: MachineState.PROCESSING,
-                    actions: []
-                }
+                SUBMIT: 'PROCESSING'
             }
         },
-        [MachineState.PROCESSING]: {
+        PROCESSING: {
             on: {
-                [MachineAction.AUTO]: {
-                    target: MachineState.LIST,
-                    actions: []
-                }
+                PROCESSED: 'LIST',
+                ERROR: 'ERROR'
             }
         },
-        [MachineState.LIST]: {
+        LIST: {
             on: {
-                [MachineAction.RESET]: {
-                    target: MachineState.START
-                }
+                RESET: 'START'
+            }
+        },
+        ERROR: {
+            on: {
+                RESET: 'START'
             }
         }
     }
-}
+};
 
 // test only 
 function fakeAJAX() {
@@ -56,14 +58,16 @@ export interface TestComponentState {
     items: string[];
 }
 
-export const STATE_ACTIONS: Action<TestComponentState> = new Map([
+
+// onEnter actions
+export const ON_ENTER_STATE_ACTIONS: Action<TestComponentState> = new Map([
     [
         MachineState.PROCESSING,
         async () => {
             const res = await fakeAJAX();
             return {
                 data: { items: res },
-                triggerAction: MachineAction.AUTO
+                triggerAction: MachineAction.PROCESSED
             };
         }
     ],
