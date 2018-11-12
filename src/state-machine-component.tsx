@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { DefaultContext, State, Machine, EventObject, StateSchema, MachineConfig, StateValue } from 'xstate';
+import { DefaultContext, State, Machine, EventObject, StateSchema, MachineConfig, StateValue, OmniEvent } from 'xstate';
 import { interpret } from 'xstate/lib/interpreter';
+import { omit, Dictionary } from 'lodash';
 
 interface HOCState<TOriginalState> {
     currentState: State<DefaultContext>;
@@ -8,10 +9,10 @@ interface HOCState<TOriginalState> {
 }
 
 export interface InjectedProps<TOriginalState> extends HOCState<TOriginalState> {
-    dispatch: (action: string) => void;
+    dispatch: (action: OmniEvent<EventObject>) => void;
 }
 
-export type Action<TOriginalState> = Map<string, () => Promise<ActionArtifact<TOriginalState>>>;
+export type Action<TOriginalState> = Map<string, (params?: Dictionary<string | number | boolean>) => Promise<ActionArtifact<TOriginalState>>>;
 
 export interface ActionArtifact<TOriginalState> {
     data: Partial<TOriginalState>;
@@ -58,7 +59,7 @@ export const withStateMachine = <
 
         constructor(props: TOriginalProps) {
             super(props);
-            this.interpreter.onTransition(current => this.execute(current));
+            this.interpreter.onTransition((current, event) => this.execute(current, event));
         }
 
         public render(): JSX.Element {
@@ -67,15 +68,22 @@ export const withStateMachine = <
             );
         }
 
-        private async execute(newState: State<DefaultContext>) {
+        private async execute(newState: State<DefaultContext>, newStateEventObject: EventObject) {
             const { changed, value } = newState;
+            let params = {};
+
+            if (newStateEventObject.type) {
+                params = omit(newStateEventObject, 'type');
+            }
+
+            // should be 
             if (changed && value !== this.currentStateName) {
                 this.currentStateName = value;
                 this.setState({ currentState: newState });
                 if (actions) {
                     const action = actions.get(value as string);
                     if (action) {
-                        const actionArtifact: ActionArtifact<TOriginalState> = await action();
+                        const actionArtifact: ActionArtifact<TOriginalState> = await action(params);
                         const { data, triggerAction } = actionArtifact;
                         const { context: prevContext } = this.state;
                         this.setState({ context: Object.assign({}, prevContext, data) });
@@ -85,6 +93,7 @@ export const withStateMachine = <
                     }
                 }
             }
+
         }
     };
 };

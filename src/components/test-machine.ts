@@ -1,4 +1,5 @@
 import { Action } from '../state-machine-component';
+import { Dictionary } from 'lodash';
 
 export const MachineState = {
     START: 'START',
@@ -35,7 +36,13 @@ export const STATE_CHART = {
         },
         LIST: {
             on: {
-                RESET: 'START'
+                RESET: 'START',
+                SELECT: 'SHOW_ITEM'
+            }
+        },
+        SHOW_ITEM: {
+            on: {
+                EXIT: 'LIST'
             }
         },
         ERROR: {
@@ -47,15 +54,16 @@ export const STATE_CHART = {
 };
 
 // test only 
-function fakeAJAX() {
+function fakeAJAX(params: Dictionary<string | number | boolean>) {
     return new Promise<string[]>(resolve => setTimeout(() => {
-        resolve(['ok']);
+        resolve(['ok', ...Object.keys(params)]);
     }, 2000)
     );
 }
 
 export interface TestComponentState {
     items: string[];
+    terms: string;
 }
 
 
@@ -63,8 +71,8 @@ export interface TestComponentState {
 export const ON_ENTER_STATE_ACTIONS: Action<TestComponentState> = new Map([
     [
         MachineState.PROCESSING,
-        async () => {
-            const res = await fakeAJAX();
+        async (params: Dictionary<string | number | boolean>) => {
+            const res = await fakeAJAX(params);
             return {
                 data: { items: res },
                 triggerAction: MachineAction.PROCESSED
@@ -83,5 +91,6 @@ export const ON_ENTER_STATE_ACTIONS: Action<TestComponentState> = new Map([
 ]);
 
 export const INITIAL_STATE: TestComponentState = {
-    items: []
+    items: [],
+    terms: ''
 }

@@ -11,19 +11,17 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
 
     public render() {
         const { currentState, context } = this.props;
+        const { value } = currentState;
 
-        if (currentState) {
-            const { value } = currentState;
-            return <div>
-                <h1>{value}</h1>
-                <ul>
-                    {this.renderItems(context.items)}
-                </ul>
-                {this.renderButton(value)}
+        return (<div>
+            <h1>{value}</h1>
+            <ul>
+                {this.renderItems(context.items)}
+            </ul>
+            {this.renderButton(value)}
+            <button onClick={this.handleSubmit}>:)</button>
 
-            </div>;
-        }
-        return null;
+        </div>);
     }
 
     private renderButton(currentState: StateValue) {
@@ -43,7 +41,7 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
     }
 
     private handleSubmit = () => {
-        this.props.dispatch(MachineAction.SUBMIT);
+        this.props.dispatch({ type: MachineAction.SUBMIT, extra: 'ok' });
     }
 
     private handleReset = () => {
