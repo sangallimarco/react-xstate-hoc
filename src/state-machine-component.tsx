@@ -31,8 +31,7 @@ export const withStateMachine = <
         Component: (
             React.ComponentClass<TOriginalProps & InjectedProps<TOriginalState>> |
             React.StatelessComponent<TOriginalProps & InjectedProps<TOriginalState>>),
-        config: MachineConfig<DefaultContext, TStateSchema, TEvent>,
-        context: TOriginalState,
+        config: MachineConfig<TOriginalState, TStateSchema, TEvent>,
         actions?: Action<TOriginalState>
     ) => {
 
@@ -54,12 +53,15 @@ export const withStateMachine = <
 
         public readonly state: HOCState<TOriginalState> = {
             currentState: stateMachine.initialState,
-            context
+            context: stateMachine.context as TOriginalState
         }
 
         constructor(props: TOriginalProps) {
             super(props);
             this.interpreter.onTransition((current, event) => this.execute(current, event));
+            this.interpreter.onChange((context) => {
+                this.setState({ context })
+            });
         }
 
         public render(): JSX.Element {
@@ -85,10 +87,12 @@ export const withStateMachine = <
                     if (action) {
                         const actionArtifact: ActionArtifact<TOriginalState> = await action(params);
                         const { data, triggerAction } = actionArtifact;
-                        const { context: prevContext } = this.state;
-                        this.setState({ context: Object.assign({}, prevContext, data) });
                         if (triggerAction) {
-                            this.interpreter.send(triggerAction);
+                            const newEvent = {
+                                type: triggerAction,
+                                data
+                            };
+                            this.interpreter.send(newEvent as any);
                         }
                     }
                 }

@@ -1,5 +1,6 @@
 import { Action } from '../state-machine-component';
 import { Dictionary } from 'lodash';
+import { assign } from 'xstate/lib/actions';
 
 export const MachineState = {
     START: 'START',
@@ -18,19 +19,35 @@ export const MachineAction = {
     NONE: 'NONE'
 }
 
-// this can be visualised here: https://musing-rosalind-2ce8e7.netlify.com/?machine=%7B%22initial%22%3A%22START%22%2C%22states%22%3A%7B%22START%22%3A%7B%22on%22%3A%7B%22SUBMIT%22%3A%22PROCESSING%22%7D%7D%2C%22PROCESSING%22%3A%7B%22on%22%3A%7B%22PROCESSED%22%3A%22LIST%22%2C%22ERROR%22%3A%22ERROR%22%7D%7D%2C%22LIST%22%3A%7B%22on%22%3A%7B%22RESET%22%3A%22START%22%7D%7D%2C%22ERROR%22%3A%7B%22on%22%3A%7B%22RESET%22%3A%22START%22%7D%7D%7D%7D
+export interface TestComponentState {
+    items: string[];
+}
 
+// this can be visualised here: https://musing-rosalind-2ce8e7.netlify.com/
 export const STATE_CHART = {
     initial: 'START',
+    context: {
+        items: []
+    },
     states: {
         START: {
             on: {
-                SUBMIT: 'PROCESSING'
+                SUBMIT: {
+                    target: 'PROCESSING',
+                    cond: (ctx: TestComponentState) => {
+                        return ctx.items.length === 0;
+                    }
+                }
             }
         },
         PROCESSING: {
             on: {
-                PROCESSED: 'LIST',
+                PROCESSED: {
+                    target: 'LIST',
+                    actions: assign((ctx: TestComponentState, e) => {
+                        return { items: e.data.items };
+                    })
+                },
                 ERROR: 'ERROR'
             }
         },
@@ -61,10 +78,7 @@ function fakeAJAX(params: Dictionary<string | number | boolean>) {
     );
 }
 
-export interface TestComponentState {
-    items: string[];
-    terms: string;
-}
+
 
 
 // onEnter actions
@@ -90,7 +104,6 @@ export const ON_ENTER_STATE_ACTIONS: Action<TestComponentState> = new Map([
     ]
 ]);
 
-export const INITIAL_STATE: TestComponentState = {
-    items: [],
-    terms: ''
-}
+// export const INITIAL_STATE: TestComponentState = {
+//     items: []
+// }
