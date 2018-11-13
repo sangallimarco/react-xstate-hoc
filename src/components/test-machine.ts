@@ -37,6 +37,11 @@ export const STATE_CHART = {
                     cond: (ctx: TestComponentState) => {
                         return ctx.items.length === 0;
                     }
+                },
+                RESET: {
+                    actions: assign((ctx: TestComponentState, e) => {
+                        return { items: [] };
+                    })
                 }
             }
         },
@@ -74,12 +79,9 @@ export const STATE_CHART = {
 function fakeAJAX(params: Dictionary<string | number | boolean>) {
     return new Promise<string[]>(resolve => setTimeout(() => {
         resolve(['ok', ...Object.keys(params)]);
-    }, 2000)
+    }, 1000)
     );
 }
-
-
-
 
 // onEnter actions
 export const ON_ENTER_STATE_ACTIONS: Action<TestComponentState> = new Map([
@@ -98,12 +100,8 @@ export const ON_ENTER_STATE_ACTIONS: Action<TestComponentState> = new Map([
         async () => {
             return {
                 data: { items: [] },
-                triggerAction: MachineAction.NONE
+                triggerAction: MachineAction.RESET
             };
         }
     ]
 ]);
-
-// export const INITIAL_STATE: TestComponentState = {
-//     items: []
-// }
