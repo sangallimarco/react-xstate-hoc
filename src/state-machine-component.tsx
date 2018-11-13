@@ -14,6 +14,10 @@ export interface InjectedProps<TOriginalState> extends HOCState<TOriginalState> 
 
 export type Action<TOriginalState> = Map<string, (params?: Dictionary<string | number | boolean>) => Promise<ActionArtifact<TOriginalState>>>;
 
+export interface OnEntryAction<T> extends EventObject {
+    data: Partial<T>
+}
+
 export interface ActionArtifact<TOriginalState> {
     data: Partial<TOriginalState>;
     triggerAction: string;

@@ -1,4 +1,4 @@
-import { Action } from '../state-machine-component';
+import { Action, OnEntryAction } from '../state-machine-component';
 import { Dictionary } from 'lodash';
 import { assign } from 'xstate/lib/actions';
 
@@ -23,7 +23,7 @@ export interface TestComponentState {
     items: string[];
 }
 
-// this can be visualised here: https://musing-rosalind-2ce8e7.netlify.com/
+// https://statecharts.github.io/xstate-viz/
 export const STATE_CHART = {
     initial: 'START',
     context: {
@@ -37,21 +37,15 @@ export const STATE_CHART = {
                     cond: (ctx: TestComponentState) => {
                         return ctx.items.length === 0;
                     }
-                },
-                RESET: {
-                    actions: assign((ctx: TestComponentState, e) => {
-                        return { items: [] };
-                    })
                 }
-            }
+            },
+            onEntry: 'resetContext'
         },
         PROCESSING: {
             on: {
                 PROCESSED: {
                     target: 'LIST',
-                    actions: assign((ctx: TestComponentState, e) => {
-                        return { items: e.data.items };
-                    })
+                    actions: 'updateList'
                 },
                 ERROR: 'ERROR'
             }
@@ -72,6 +66,14 @@ export const STATE_CHART = {
                 RESET: 'START'
             }
         }
+    },
+    actions: {
+        resetContext: assign((ctx: TestComponentState, e: OnEntryAction<TestComponentState>) => {
+            return { items: [] };
+        }),
+        updateList: assign((ctx: TestComponentState, e: OnEntryAction<TestComponentState>) => {
+            return { items: e.data.items };
+        })
     }
 };
 
@@ -92,15 +94,6 @@ export const ON_ENTER_STATE_ACTIONS: Action<TestComponentState> = new Map([
             return {
                 data: { items: res },
                 triggerAction: MachineAction.PROCESSED
-            };
-        }
-    ],
-    [
-        MachineState.START,
-        async () => {
-            return {
-                data: { items: [] },
-                triggerAction: MachineAction.RESET
             };
         }
     ]
