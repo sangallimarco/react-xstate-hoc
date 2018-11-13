@@ -39,13 +39,17 @@ export const STATE_CHART = {
                     }
                 }
             },
-            onEntry: ['resetContext']
+            onEntry: assign((ctx: TestComponentState, e: OnEntryAction<TestComponentState>) => {
+                return { items: [] };
+            })
         },
         PROCESSING: {
             on: {
                 PROCESSED: {
                     target: 'LIST',
-                    actions: ['updateList']
+                    actions: assign((ctx: TestComponentState, e: OnEntryAction<TestComponentState>) => {
+                        return { items: e.data.items };
+                    })
                 },
                 ERROR: 'ERROR'
             }
