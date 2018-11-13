@@ -39,13 +39,13 @@ export const STATE_CHART = {
                     }
                 }
             },
-            onEntry: 'resetContext'
+            onEntry: ['resetContext']
         },
         PROCESSING: {
             on: {
                 PROCESSED: {
                     target: 'LIST',
-                    actions: 'updateList'
+                    actions: ['updateList']
                 },
                 ERROR: 'ERROR'
             }
@@ -66,7 +66,10 @@ export const STATE_CHART = {
                 RESET: 'START'
             }
         }
-    },
+    }
+};
+
+export const MACHINE_OPTIONS = {
     actions: {
         resetContext: assign((ctx: TestComponentState, e: OnEntryAction<TestComponentState>) => {
             return { items: [] };

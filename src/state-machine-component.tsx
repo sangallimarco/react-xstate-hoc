@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DefaultContext, State, Machine, EventObject, StateSchema, MachineConfig, StateValue, OmniEvent } from 'xstate';
+import { DefaultContext, State, Machine, EventObject, StateSchema, MachineConfig, StateValue, OmniEvent, MachineOptions } from 'xstate';
 import { interpret } from 'xstate/lib/interpreter';
 import { omit, Dictionary } from 'lodash';
 
@@ -36,11 +36,12 @@ export const withStateMachine = <
             React.ComponentClass<TOriginalProps & InjectedProps<TOriginalState>> |
             React.StatelessComponent<TOriginalProps & InjectedProps<TOriginalState>>),
         config: MachineConfig<TOriginalState, TStateSchema, TEvent>,
-        actions?: Action<TOriginalState>
+        options?: MachineOptions<TOriginalState, TEvent>,
+        onEnterActions?: Action<TOriginalState>
     ) => {
 
     type WrapperProps = Subtract<TOriginalProps, InjectedProps<TOriginalState>>;
-    const stateMachine = Machine(config);
+    const stateMachine = Machine(config, options);
 
     return class StateMachine extends React.Component<WrapperProps, HOCState<TOriginalState>> {
 
@@ -86,8 +87,8 @@ export const withStateMachine = <
             if (changed && value !== this.currentStateName) {
                 this.currentStateName = value;
                 this.setState({ currentState: newState });
-                if (actions) {
-                    const action = actions.get(value as string);
+                if (onEnterActions) {
+                    const action = onEnterActions.get(value as string);
                     if (action) {
                         const actionArtifact: ActionArtifact<TOriginalState> = await action(params);
                         const { data, triggerAction } = actionArtifact;

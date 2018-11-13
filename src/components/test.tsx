@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withStateMachine, InjectedProps } from '../state-machine-component';
-import { TestComponentState, STATE_CHART, ON_ENTER_STATE_ACTIONS, MachineAction, MachineState } from './test-machine';
+import { TestComponentState, STATE_CHART, ON_ENTER_STATE_ACTIONS, MachineAction, MachineState, MACHINE_OPTIONS } from './test-machine';
 import { StateValue } from 'xstate';
 
 interface TestComponentProps extends InjectedProps<TestComponentState> {
@@ -52,5 +52,6 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
 export const TestComponent = withStateMachine(
     TestBaseComponent,
     STATE_CHART,
+    MACHINE_OPTIONS,
     ON_ENTER_STATE_ACTIONS
 );
