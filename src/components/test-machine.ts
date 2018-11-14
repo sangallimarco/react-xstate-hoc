@@ -1,6 +1,6 @@
 import { Action, OnEntryAction } from '../state-machine-component';
 import { Dictionary } from 'lodash';
-import { assign } from 'xstate/lib/actions';
+// import { assign } from 'xstate/lib/actions';
 
 export const MachineState = {
     START: 'START',
@@ -26,30 +26,21 @@ export interface TestComponentState {
 // https://statecharts.github.io/xstate-viz/
 export const STATE_CHART = {
     initial: 'START',
-    context: {
-        items: []
-    },
     states: {
         START: {
             on: {
                 SUBMIT: {
                     target: 'PROCESSING',
-                    cond: (ctx: TestComponentState) => {
-                        return ctx.items.length === 0;
-                    }
+                    cond: 'checkStart'
                 }
             },
-            onEntry: assign((ctx: TestComponentState, e: OnEntryAction<TestComponentState>) => {
-                return { items: [] };
-            })
+            onEntry: 'resetContext'
         },
         PROCESSING: {
             on: {
                 PROCESSED: {
                     target: 'LIST',
-                    actions: assign((ctx: TestComponentState, e: OnEntryAction<TestComponentState>) => {
-                        return { items: e.data.items };
-                    })
+                    actions: 'updateList'
                 },
                 ERROR: 'ERROR'
             }
@@ -73,14 +64,23 @@ export const STATE_CHART = {
     }
 };
 
+// @TODO fix those
 export const MACHINE_OPTIONS = {
     actions: {
-        resetContext: assign((ctx: TestComponentState, e: OnEntryAction<TestComponentState>) => {
-            return { items: [] };
-        }),
-        updateList: assign((ctx: TestComponentState, e: OnEntryAction<TestComponentState>) => {
-            return { items: e.data.items };
-        })
+        resetContext: (ctx: TestComponentState, e: OnEntryAction<TestComponentState>) => {
+            Object.assign(ctx, { items: [] });
+        },
+        updateList: (ctx: TestComponentState, e: OnEntryAction<TestComponentState>) => {
+            const { data: { items } } = e;
+            if (items) {
+                Object.assign(ctx, { items });
+            }
+        }
+    },
+    guards: {
+        checkStart: (ctx: TestComponentState) => {
+            return ctx.items.length === 0;
+        }
     }
 };
 
@@ -100,8 +100,12 @@ export const ON_ENTER_STATE_ACTIONS: Action<TestComponentState> = new Map([
             const res = await fakeAJAX(params);
             return {
                 data: { items: res },
-                triggerAction: MachineAction.PROCESSED
+                triggerAction: MachineAction.PROCESSED // please create an action in state machine in order to change
             };
         }
     ]
 ]);
+
+export const INITIAL_STATE: TestComponentState = {
+    items: []
+};
