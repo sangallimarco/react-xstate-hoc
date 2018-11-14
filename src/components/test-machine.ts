@@ -86,8 +86,13 @@ export const MACHINE_OPTIONS = {
 
 // test only 
 function fakeAJAX(params: Dictionary<string | number | boolean>) {
-    return new Promise<string[]>(resolve => setTimeout(() => {
-        resolve(['ok', ...Object.keys(params)]);
+    return new Promise<string[]>((resolve, reject) => setTimeout(() => {
+        const rnd = Math.random();
+        if (rnd > 0.5) {
+            reject();
+        } else {
+            resolve(['ok', ...Object.keys(params)]);
+        }
     }, 1000)
     );
 }
@@ -97,10 +102,16 @@ export const ON_ENTER_STATE_ACTIONS: Action<TestComponentState> = new Map([
     [
         MachineState.PROCESSING,
         async (params: Dictionary<string | number | boolean>) => {
-            const res = await fakeAJAX(params);
+            let triggerAction = MachineAction.PROCESSED;
+            let items: string[] = [];
+            try {
+                items = await fakeAJAX(params);
+            } catch (e) {
+                triggerAction = MachineAction.ERROR;
+            }
             return {
-                data: { items: res },
-                triggerAction: MachineAction.PROCESSED // please create an action in state machine in order to change
+                data: { items },
+                triggerAction // please create an action in state machine in order to change
             };
         }
     ]

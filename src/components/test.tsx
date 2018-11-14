@@ -19,7 +19,7 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
                 {this.renderItems(context.items)}
             </ul>
             {this.renderButton(value)}
-            <button onClick={this.handleSubmit}>:)</button>
+            <button onClick={this.handleSubmit}>SUBMIT</button>
 
         </div>);
     }
@@ -30,6 +30,8 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
                 return <button onClick={this.handleSubmit}>OK</button>;
             case MachineState.LIST:
                 return <button onClick={this.handleReset}>RESET</button>;
+            case MachineState.ERROR:
+                return <button onClick={this.handleReset}>RE-START</button>;
             default:
                 return null;
         }
