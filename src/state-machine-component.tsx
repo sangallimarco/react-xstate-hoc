@@ -36,12 +36,13 @@ export const withStateMachine = <
             React.ComponentClass<TOriginalProps & InjectedProps<TOriginalState>> |
             React.StatelessComponent<TOriginalProps & InjectedProps<TOriginalState>>),
         config: MachineConfig<TOriginalState, TStateSchema, TEvent>,
-        options?: MachineOptions<TOriginalState, TEvent>,
-        onEnterActions?: Action<TOriginalState>
+        options: MachineOptions<TOriginalState, TEvent>,
+        initialContext: TOriginalState,
+        onEnterActions: Action<TOriginalState>
     ) => {
 
     type WrapperProps = Subtract<TOriginalProps, InjectedProps<TOriginalState>>;
-    const stateMachine = Machine(config, options);
+    const stateMachine = Machine(config, options, initialContext);
 
     return class StateMachine extends React.Component<WrapperProps, HOCState<TOriginalState>> {
 
