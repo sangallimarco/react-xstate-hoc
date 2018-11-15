@@ -11,21 +11,20 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
 
     public render() {
         const { currentState, context } = this.props;
-        const { value } = currentState;
+        const { value: currentStateName } = currentState;
 
         return (<div>
-            <h1>{value}</h1>
+            <h1>{currentStateName}</h1>
             <ul>
                 {this.renderItems(context.items)}
             </ul>
-            {this.renderButton(value)}
+            {this.renderButton(currentStateName)}
             <button onClick={this.handleSubmit}>SUBMIT</button>
-
         </div>);
     }
 
-    private renderButton(currentState: StateValue) {
-        switch (currentState) {
+    private renderButton(currentStateName: StateValue) {
+        switch (currentStateName) {
             case MachineState.START:
                 return <button onClick={this.handleSubmit}>OK</button>;
             case MachineState.LIST:
@@ -39,7 +38,6 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
 
     private renderItems(items: string[]) {
         return items.map((item, i) => <li key={i}>{item}</li>);
-
     }
 
     private handleSubmit = () => {
