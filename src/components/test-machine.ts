@@ -1,12 +1,16 @@
 import { Action, OnEntryAction } from '../state-machine-component';
 import { Dictionary } from 'lodash';
+import { Machine } from 'xstate';
 // import { assign } from 'xstate/lib/actions';
+
+// https://statecharts.github.io/xstate-viz/
 
 export const MachineState = {
     START: 'START',
     PROCESSING: 'PROCESSING',
     LIST: 'LIST',
     ERROR: 'ERROR',
+    SHOW_ITEM: 'SHOW_ITEM',
     END: 'END'
 }
 
@@ -19,50 +23,49 @@ export const MachineAction = {
     NONE: 'NONE'
 }
 
-export interface TestComponentState {
-    items: string[];
-}
-
-// https://statecharts.github.io/xstate-viz/
 export const STATE_CHART = {
     initial: 'START',
     states: {
-        START: {
+        [MachineState.START]: {
             on: {
                 SUBMIT: {
-                    target: 'PROCESSING',
+                    target: MachineState.PROCESSING,
                     cond: 'checkStart'
                 }
             },
             onEntry: 'resetContext'
         },
-        PROCESSING: {
+        [MachineState.PROCESSING]: {
             on: {
                 PROCESSED: {
-                    target: 'LIST',
+                    target: MachineState.LIST,
                     actions: 'updateList'
                 },
                 ERROR: 'ERROR'
             }
         },
-        LIST: {
+        [MachineState.LIST]: {
             on: {
-                RESET: 'START',
+                RESET: MachineState.START,
                 SELECT: 'SHOW_ITEM'
             }
         },
-        SHOW_ITEM: {
+        [MachineState.SHOW_ITEM]: {
             on: {
-                EXIT: 'LIST'
+                EXIT: MachineState.LIST
             }
         },
-        ERROR: {
+        [MachineState.ERROR]: {
             on: {
-                RESET: 'START'
+                RESET: MachineState.START
             }
         }
     }
 };
+
+export interface TestComponentState {
+    items: string[];
+}
 
 // @TODO fix those
 export const MACHINE_OPTIONS = {
@@ -120,3 +123,5 @@ export const ON_ENTER_STATE_ACTIONS: Action<TestComponentState> = new Map([
 export const INITIAL_STATE: TestComponentState = {
     items: []
 };
+
+export const STATE_MACHINE = Machine(STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE);
