@@ -1,6 +1,5 @@
-import { Action, OnEntryAction } from '../state-machine-component';
+import { StateMachineAction, StateMachineOnEntryAction } from '../lib';
 import { Dictionary } from 'lodash';
-import { Machine } from 'xstate';
 // import { assign } from 'xstate/lib/actions';
 
 // https://statecharts.github.io/xstate-viz/
@@ -70,10 +69,10 @@ export interface TestComponentState {
 // @TODO fix those
 export const MACHINE_OPTIONS = {
     actions: {
-        resetContext: (ctx: TestComponentState, e: OnEntryAction<TestComponentState>) => {
+        resetContext: (ctx: TestComponentState, e: StateMachineOnEntryAction<TestComponentState>) => {
             Object.assign(ctx, { items: [] });
         },
-        updateList: (ctx: TestComponentState, e: OnEntryAction<TestComponentState>) => {
+        updateList: (ctx: TestComponentState, e: StateMachineOnEntryAction<TestComponentState>) => {
             const { data: { items } } = e;
             if (items) {
                 Object.assign(ctx, { items });
@@ -101,7 +100,7 @@ function fakeAJAX(params: Dictionary<string | number | boolean>) {
 }
 
 // onEnter actions
-export const ON_ENTER_STATE_ACTIONS: Action<TestComponentState> = new Map([
+export const ON_ENTER_STATE_ACTIONS: StateMachineAction<TestComponentState> = new Map([
     [
         MachineState.PROCESSING,
         async (params: Dictionary<string | number | boolean>) => {
@@ -114,7 +113,7 @@ export const ON_ENTER_STATE_ACTIONS: Action<TestComponentState> = new Map([
             }
             return {
                 data: { items },
-                triggerAction // please create an action in state machine in order to change
+                triggerAction // please create an StateMachineAction in state machine in order to change
             };
         }
     ]
@@ -123,5 +122,3 @@ export const ON_ENTER_STATE_ACTIONS: Action<TestComponentState> = new Map([
 export const INITIAL_STATE: TestComponentState = {
     items: []
 };
-
-export const STATE_MACHINE = Machine(STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE);

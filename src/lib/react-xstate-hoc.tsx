@@ -1,30 +1,8 @@
 import * as React from 'react';
-import { DefaultContext, State, Machine, EventObject, StateSchema, MachineConfig, StateValue, OmniEvent, MachineOptions } from 'xstate';
+import { DefaultContext, State, Machine, EventObject, StateSchema, MachineConfig, StateValue, MachineOptions } from 'xstate';
 import { interpret } from 'xstate/lib/interpreter';
-import { omit, Dictionary } from 'lodash';
-
-interface HOCState<TOriginalState> {
-    currentState: State<DefaultContext>;
-    context: TOriginalState
-}
-
-export interface InjectedProps<TOriginalState> extends HOCState<TOriginalState> {
-    dispatch: (action: OmniEvent<EventObject>) => void;
-}
-
-export type Action<TOriginalState> = Map<string, (params?: Dictionary<string | number | boolean>) => Promise<ActionArtifact<TOriginalState>>>;
-
-export interface OnEntryAction<T> extends EventObject {
-    data: Partial<T>
-}
-
-export interface ActionArtifact<TOriginalState> {
-    data: Partial<TOriginalState>;
-    triggerAction: string;
-}
-
-type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
-type Subtract<T, K> = Omit<T, keyof K>;
+import { omit } from 'lodash';
+import { StateMachineInjectedProps, StateMachineHOCState, Subtract, StateMachineActionArtifact, StateMachineAction } from './types';
 
 export const withStateMachine = <
     TOriginalProps,
@@ -33,21 +11,21 @@ export const withStateMachine = <
     TEvent extends EventObject = EventObject
     >(
         Component: (
-            React.ComponentClass<TOriginalProps & InjectedProps<TOriginalState>> |
-            React.StatelessComponent<TOriginalProps & InjectedProps<TOriginalState>>),
+            React.ComponentClass<TOriginalProps & StateMachineInjectedProps<TOriginalState>> |
+            React.StatelessComponent<TOriginalProps & StateMachineInjectedProps<TOriginalState>>),
         config: MachineConfig<TOriginalState, TStateSchema, TEvent>,
         options: MachineOptions<TOriginalState, TEvent>,
         initialContext: TOriginalState,
-        onEnterActions: Action<TOriginalState>
+        onEnterActions: StateMachineAction<TOriginalState>
     ) => {
 
-    type WrapperProps = Subtract<TOriginalProps, InjectedProps<TOriginalState>>;
-    const stateMachine = Machine(config, options, initialContext);
+    type WrapperProps = Subtract<TOriginalProps, StateMachineInjectedProps<TOriginalState>>;
 
-    return class StateMachine extends React.Component<WrapperProps, HOCState<TOriginalState>> {
+    return class StateMachine extends React.Component<WrapperProps, StateMachineHOCState<TOriginalState>> {
 
-        private interpreter = interpret(stateMachine);
-        private currentStateName: StateValue;
+        public stateMachine = Machine(config, options, initialContext)
+        public interpreter = interpret(this.stateMachine);
+        public currentStateName: StateValue;
 
         public componentDidMount() {
             this.interpreter.start();
@@ -57,14 +35,14 @@ export const withStateMachine = <
             this.interpreter.stop();
         }
 
-        public readonly state: HOCState<TOriginalState> = {
-            currentState: stateMachine.initialState,
-            context: stateMachine.context as TOriginalState
+        public readonly state: StateMachineHOCState<TOriginalState> = {
+            currentState: this.stateMachine.initialState,
+            context: this.stateMachine.context as TOriginalState
         }
 
         constructor(props: TOriginalProps) {
             super(props);
-            this.interpreter.onTransition((current, event) => this.execute(current, event));
+            this.interpreter.onTransition((current, event) => this._execute(current, event));
             this.interpreter.onChange((context) => {
                 this.setState({ context })
             });
@@ -76,7 +54,7 @@ export const withStateMachine = <
             );
         }
 
-        private async execute(newState: State<DefaultContext>, newStateEventObject: EventObject) {
+        public async _execute(newState: State<DefaultContext>, newStateEventObject: EventObject) {
             const { changed, value } = newState;
             let params = {};
 
@@ -84,14 +62,14 @@ export const withStateMachine = <
                 params = omit(newStateEventObject, 'type');
             }
 
-            // should be 
+            // should be in a service/function
             if (changed && value !== this.currentStateName) {
                 this.currentStateName = value;
                 this.setState({ currentState: newState });
                 if (onEnterActions) {
                     const action = onEnterActions.get(value as string);
                     if (action) {
-                        const actionArtifact: ActionArtifact<TOriginalState> = await action(params);
+                        const actionArtifact: StateMachineActionArtifact<TOriginalState> = await action(params);
                         const { data, triggerAction } = actionArtifact;
                         if (triggerAction) {
                             const newEvent = {

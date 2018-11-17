@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { withStateMachine, InjectedProps } from '../state-machine-component';
+import { withStateMachine, StateMachineInjectedProps } from '../lib';
 import { TestComponentState, STATE_CHART, ON_ENTER_STATE_ACTIONS, MachineAction, MachineState, MACHINE_OPTIONS, INITIAL_STATE } from './test-machine';
 import { StateValue } from 'xstate';
 
-interface TestComponentProps extends InjectedProps<TestComponentState> {
+interface TestComponentProps extends StateMachineInjectedProps<TestComponentState> {
     label?: string;
 }
 
