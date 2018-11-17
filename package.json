@@ -8,7 +8,7 @@
     "lodash": "^4.17.11",
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
-    "react-scripts-ts": "3.1.0",
+    "react-scripts-ts": "^4.0.8",
     "react-test-renderer": "^16.6.0",
     "xstate": "^4.0.1"
   },
@@ -33,8 +33,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org/sangallimarco75/react-state-machine.git"
+    "url": "git+https://github.com/sangallimarco/react-xstate-hoc.git"
   },
   "keywords": [],
-  "homepage": "https://bitbucket.org/sangallimarco75/react-state-machine#readme"
+  "bugs": {
+    "url": "https://github.com/sangallimarco/react-xstate-hoc/issues"
+  },
+  "homepage": "https://github.com/sangallimarco/react-xstate-hoc#readme",
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
