@@ -40,7 +40,7 @@
     "type": "git",
     "url": "git+https://github.com/sangallimarco/react-xstate-hoc.git"
   },
-  "keywords": ["xstate", "react", "hoc", "state machine"],
+  "keywords": ["xstate", "react", "hoc", "fsm"],
   "bugs": {
     "url": "https://github.com/sangallimarco/react-xstate-hoc/issues"
   },
