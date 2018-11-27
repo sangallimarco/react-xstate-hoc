@@ -1,0 +1,21 @@
+.test {
+    background-color: azure;
+    padding: 10px;
+
+}
+
+.test-error {
+    background-color: orangered;
+}
+
+.test-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.test-list-item {
+    display: flex;
+    justify-content: center;
+    background-color: aliceblue;
+    margin: 10px;
+}

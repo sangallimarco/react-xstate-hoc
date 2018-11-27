@@ -1,4 +1,4 @@
-import { StateMachineAction, StateMachineOnEntryAction } from '../lib';
+import { StateMachineAction, StateMachineOnEntryAction } from '../../lib';
 import { Dictionary } from 'lodash';
 // import { assign } from 'xstate/lib/actions';
 
@@ -19,7 +19,9 @@ export const MachineAction = {
     PROCESSED: 'PROCESSED',
     ERROR: 'ERROR',
     RESET: 'RESET',
-    NONE: 'NONE'
+    NONE: 'NONE',
+    SELECT: 'SELECT',
+    EXIT: 'EXIT'
 }
 
 export const STATE_CHART = {
@@ -27,7 +29,7 @@ export const STATE_CHART = {
     states: {
         [MachineState.START]: {
             on: {
-                SUBMIT: {
+                [MachineAction.SUBMIT]: {
                     target: MachineState.PROCESSING,
                     cond: 'checkStart'
                 }
@@ -36,27 +38,27 @@ export const STATE_CHART = {
         },
         [MachineState.PROCESSING]: {
             on: {
-                PROCESSED: {
+                [MachineAction.PROCESSED]: {
                     target: MachineState.LIST,
                     actions: 'updateList'
                 },
-                ERROR: 'ERROR'
+                [MachineAction.ERROR]: MachineState.ERROR
             }
         },
         [MachineState.LIST]: {
             on: {
-                RESET: MachineState.START,
-                SELECT: 'SHOW_ITEM'
+                [MachineAction.RESET]: MachineState.START,
+                [MachineAction.SELECT]: MachineState.SHOW_ITEM
             }
         },
         [MachineState.SHOW_ITEM]: {
             on: {
-                EXIT: MachineState.LIST
+                [MachineAction.EXIT]: MachineState.LIST
             }
         },
         [MachineState.ERROR]: {
             on: {
-                RESET: MachineState.START
+                [MachineAction.RESET]: MachineState.START
             }
         }
     }
