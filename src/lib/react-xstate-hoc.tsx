@@ -56,7 +56,7 @@ export const withStateMachine = <
 
         public async _execute(newState: State<DefaultContext>, newStateEventObject: EventObject) {
             const { changed, value } = newState;
-            let params = {};
+            let params: Record<string, any> = {};
 
             if (newStateEventObject.type) {
                 params = omit(newStateEventObject, 'type');
