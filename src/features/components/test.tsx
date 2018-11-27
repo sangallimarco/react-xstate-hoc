@@ -29,7 +29,9 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
                 return <button onClick={this.handleSubmit}>OK</button>;
             case MachineState.LIST:
                 return <div>
-                    {this.renderItems(context.items)}
+                    <div className="test-list">
+                        {this.renderItems(context.items)}
+                    </div>
                     <TestChildComponent onExit={this.handleReset} />
                 </div>;
             case MachineState.ERROR:

@@ -1,6 +1,6 @@
 import { StateMachineAction, StateMachineOnEntryAction } from '../../lib';
 import { Dictionary } from 'lodash';
-// import { assign } from 'xstate/lib/actions';
+import { fakeAJAX } from '../mocks/ajax';
 
 // https://statecharts.github.io/xstate-viz/
 
@@ -87,19 +87,6 @@ export const MACHINE_OPTIONS = {
         }
     }
 };
-
-// test only 
-function fakeAJAX(params: Dictionary<string | number | boolean>) {
-    return new Promise<string[]>((resolve, reject) => setTimeout(() => {
-        const rnd = Math.random();
-        if (rnd > 0.5) {
-            reject();
-        } else {
-            resolve(['ok', ...Object.keys(params)]);
-        }
-    }, 1000)
-    );
-}
 
 // onEnter actions
 export const ON_ENTER_STATE_ACTIONS: StateMachineAction<TestComponentState> = new Map([

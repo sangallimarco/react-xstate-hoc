@@ -1,5 +1,4 @@
 .test {
-    background-color: azure;
     padding: 10px;
 
 }
@@ -11,11 +10,13 @@
 .test-list {
     display: flex;
     flex-direction: column;
+    border-top: 1px solid black;
 }
 
 .test-list-item {
     display: flex;
     justify-content: center;
-    background-color: aliceblue;
-    margin: 10px;
+    background-color: #fafafa;
+    padding: 10px;
+    border-bottom: 1px solid black;
 }
