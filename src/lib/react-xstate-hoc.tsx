@@ -23,6 +23,7 @@ export const withStateMachine = <
 
     return class StateMachine extends React.Component<WrapperProps, StateMachineHOCState<TOriginalState>> {
 
+        // those should be private but TSC fails to export declarations
         public stateMachine = Machine(config, options, initialContext)
         public interpreter = interpret(this.stateMachine);
         public currentStateName: StateValue;
