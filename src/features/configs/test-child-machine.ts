@@ -6,7 +6,7 @@ export const MachineState = {
 }
 
 export const MachineAction = {
-    RESET: 'RESET'
+    STOP: 'STOP'
 }
 
 export const STATE_CHART = {
@@ -14,17 +14,12 @@ export const STATE_CHART = {
     states: {
         [MachineState.START]: {
             on: {
-                SUBMIT: {
+                [MachineAction.STOP]: {
                     target: MachineState.END
                 }
-            },
-            onEntry: 'resetContext'
+            }
         },
         [MachineState.END]: {
-            on: {
-                [MachineAction.RESET]: MachineState.START
-            },
-            onEntry: 'resetContext'
         }
     }
 };
