@@ -1,8 +1,7 @@
-import { omit } from 'lodash';
-import { fakeAJAX } from '../mocks/ajax';
 import { assign } from 'xstate/lib/actions';
-// import { MachineConfig, StateSchema } from 'xstate';
 import { StateMachineOnEntryAction } from 'src/lib';
+import { fetchData } from '../services/test-service';
+import { TestComponentState } from '../types/test-types';
 
 // https://statecharts.github.io/xstate-viz/
 
@@ -79,21 +78,7 @@ export const STATE_CHART = {
     }
 };
 
-export interface TestComponentState {
-    items: string[];
-}
 
-// @TODO fix those
-const fetchData = async (e: StateMachineOnEntryAction<TestComponentState>) => {
-    const params = omit(e, 'type');
-    let items: string[] = [];
-    try {
-        items = await fakeAJAX(params);
-        return { items };
-    } catch (e) {
-        throw new Error('Something Wrong');
-    }
-}
 
 export const MACHINE_OPTIONS = {
 }
