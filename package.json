@@ -2,6 +2,7 @@
   "name": "react-xstate-hoc",
   "version": "1.1.0",
   "main": "build/lib/index.js",
+  "types": "build/lib/index.d.ts",
   "author": "Marco Sangalli <sangalli.marco@gmail.com>",
   "license": "ISC",
   "dependencies": {
@@ -26,13 +27,13 @@
     "@types/jest": "^23.3.7",
     "@types/lodash": "^4.14.118",
     "@types/node": "^10.12.0",
-    "@types/react": "^16.4.18",
-    "@types/react-dom": "^16.0.9",
-    "react": "^16.6.0",
-    "react-dom": "^16.6.0",
+    "@types/react": "^16.7.11",
+    "@types/react-dom": "^16.0.11",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
     "react-scripts-ts": "^4.0.8",
     "react-test-renderer": "^16.6.0",
-    "typescript": "^3.1.3"
+    "typescript": "^3.1.6"
   },
   "description": "HOC component with Async onEntry actions for Xstate",
   "directories": {

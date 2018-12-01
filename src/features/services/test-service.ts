@@ -1,4 +1,4 @@
-import { StateMachineAction } from 'src/lib';
+import { StateMachineAction } from '../../lib';
 import { omit } from 'lodash';
 import { fakeAJAX } from '../mocks/ajax';
 import { TestComponentState } from '../configs/test-types';
