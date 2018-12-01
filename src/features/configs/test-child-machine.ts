@@ -1,25 +1,27 @@
-import { StateMachineAction, } from '../../lib';
+import { MachineConfig } from 'xstate';
 
-export const MachineState = {
-    START: 'START',
-    END: 'END'
-}
-
-export const MachineAction = {
-    STOP: 'STOP'
-}
-
-export const STATE_CHART = {
-    initial: MachineState.START,
+export interface TestChildMachineStateSchema {
     states: {
-        [MachineState.START]: {
+        START: {};
+        END: {};
+    }
+}
+
+export type TestChildMachineEvents =
+    | { type: 'STOP' }
+    | { type: 'DEFAULT' };
+
+export const STATE_CHART: MachineConfig<{}, TestChildMachineStateSchema, TestChildMachineEvents> = {
+    initial: 'START',
+    states: {
+        START: {
             on: {
-                [MachineAction.STOP]: {
-                    target: MachineState.END
+                STOP: {
+                    target: 'END'
                 }
             }
         },
-        [MachineState.END]: {
+        END: {
         }
     }
 };
@@ -28,16 +30,8 @@ export interface TestChildComponentState {
     enabled: boolean;
 }
 
-// @TODO fix those
 export const MACHINE_OPTIONS = {
-    actions: {
-    },
-    guards: {
-    }
 };
-
-// onEnter actions
-export const ON_ENTER_STATE_ACTIONS: StateMachineAction<TestChildComponentState> = new Map();
 
 export const INITIAL_STATE: TestChildComponentState = {
     enabled: true

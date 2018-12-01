@@ -1,25 +1,20 @@
-import { DefaultContext, State, EventObject, OmniEvent } from 'xstate';
-import { Dictionary } from 'lodash';
+import { EventObject, OmniEvent, StateSchema } from 'xstate';
 
-export interface StateMachineHOCState<TOriginalState> {
-    currentState: State<DefaultContext>;
-    context: TOriginalState
+export interface StateMachineHOCState<TContext, TStateSchema extends StateSchema> {
+    currentState: StateMachineStateName<TStateSchema>;
+    context: TContext
 }
 
-export interface StateMachineInjectedProps<TOriginalState> extends StateMachineHOCState<TOriginalState> {
-    dispatch: (action: OmniEvent<EventObject>) => void;
+export interface StateMachineInjectedProps<TContext, TStateSchema extends StateSchema, MachineEvents extends OmniEvent<EventObject>> extends StateMachineHOCState<TContext, TStateSchema> {
+    dispatch: (action: MachineEvents) => void;
 }
 
-export type StateMachineAction<TOriginalState> = Map<string, (params?: Dictionary<string | number | boolean>) => Promise<StateMachineActionArtifact<TOriginalState>>>;
-
-export interface StateMachineOnEntryAction<T> extends EventObject {
+export interface StateMachineAction<T> extends EventObject {
     data: Partial<T>
 }
 
-export interface StateMachineActionArtifact<TOriginalState> {
-    data: Partial<TOriginalState>;
-    triggerAction: string;
-}
+export type StateMachineStateName<T extends StateSchema> = keyof T['states'];
 
 export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
+
 export type Subtract<T, K> = Omit<T, keyof K>;

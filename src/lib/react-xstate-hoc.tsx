@@ -1,27 +1,25 @@
 import * as React from 'react';
-import { DefaultContext, State, Machine, EventObject, StateSchema, MachineConfig, StateValue, MachineOptions } from 'xstate';
+import { State, Machine, EventObject, StateSchema, MachineConfig, StateValue, MachineOptions, DefaultContext } from 'xstate';
 import { interpret } from 'xstate/lib/interpreter';
-import { omit } from 'lodash';
-import { StateMachineInjectedProps, StateMachineHOCState, Subtract, StateMachineActionArtifact, StateMachineAction } from './types';
+import { StateMachineInjectedProps, StateMachineHOCState, Subtract, StateMachineStateName } from './types';
 
 export const withStateMachine = <
     TOriginalProps,
-    TOriginalState extends {} = {},
     TStateSchema extends StateSchema = any,
+    TContext = DefaultContext,
     TEvent extends EventObject = EventObject
     >(
         Component: (
-            React.ComponentClass<TOriginalProps & StateMachineInjectedProps<TOriginalState>> |
-            React.StatelessComponent<TOriginalProps & StateMachineInjectedProps<TOriginalState>>),
-        config: MachineConfig<TOriginalState, TStateSchema, TEvent>,
-        options: MachineOptions<TOriginalState, TEvent>,
-        initialContext: TOriginalState,
-        onEnterActions: StateMachineAction<TOriginalState>
+            React.ComponentClass<TOriginalProps & StateMachineInjectedProps<TContext, TStateSchema, TEvent>> |
+            React.StatelessComponent<TOriginalProps & StateMachineInjectedProps<TContext, TStateSchema, TEvent>>),
+        config: MachineConfig<TContext, TStateSchema, TEvent>,
+        options: MachineOptions<TContext, TEvent>,
+        initialContext: TContext
     ) => {
 
-    type WrapperProps = Subtract<TOriginalProps, StateMachineInjectedProps<TOriginalState>>;
+    type WrapperProps = Subtract<TOriginalProps, StateMachineInjectedProps<TContext, TStateSchema, TEvent>>;
 
-    return class StateMachine extends React.Component<WrapperProps, StateMachineHOCState<TOriginalState>> {
+    return class StateMachine extends React.Component<WrapperProps, StateMachineHOCState<TContext, TStateSchema>> {
 
         // those should be private but TSC fails to export declarations
         public stateMachine = Machine(config, options, initialContext)
@@ -36,14 +34,14 @@ export const withStateMachine = <
             this.interpreter.stop();
         }
 
-        public readonly state: StateMachineHOCState<TOriginalState> = {
-            currentState: this.stateMachine.initialState,
-            context: this.stateMachine.context as TOriginalState
+        public readonly state: StateMachineHOCState<TContext, TStateSchema> = {
+            currentState: this.stateMachine.initialState.value as StateMachineStateName<TStateSchema>,
+            context: this.stateMachine.context as TContext
         }
 
         constructor(props: TOriginalProps) {
             super(props);
-            this.interpreter.onTransition((current, event) => this._execute(current, event));
+            this.interpreter.onTransition((current) => this._execute(current));
             this.interpreter.onChange((context) => {
                 this.setState({ context })
             });
@@ -55,32 +53,13 @@ export const withStateMachine = <
             );
         }
 
-        public async _execute(newState: State<DefaultContext>, newStateEventObject: EventObject) {
+        public async _execute(newState: State<any, EventObject>) {
             const { changed, value } = newState;
-            let params: Record<string, any> = {};
 
-            if (newStateEventObject.type) {
-                params = omit(newStateEventObject, 'type');
-            }
-
-            // should be in a service/function
             if (changed && value !== this.currentStateName) {
                 this.currentStateName = value;
-                this.setState({ currentState: newState });
-                if (onEnterActions) {
-                    const action = onEnterActions.get(value as string);
-                    if (action) {
-                        const actionArtifact: StateMachineActionArtifact<TOriginalState> = await action(params);
-                        const { data, triggerAction } = actionArtifact;
-                        if (triggerAction) {
-                            const newEvent = {
-                                type: triggerAction,
-                                data
-                            };
-                            this.interpreter.send(newEvent as any);
-                        }
-                    }
-                }
+                const newStateName = value as StateMachineStateName<TStateSchema>;
+                this.setState({ currentState: newStateName });
             }
 
         }

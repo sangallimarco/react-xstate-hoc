@@ -1,112 +1,86 @@
-import { StateMachineAction, StateMachineOnEntryAction } from '../../lib';
-import { Dictionary } from 'lodash';
-import { fakeAJAX } from '../mocks/ajax';
+import { assign } from 'xstate/lib/actions';
+import { StateMachineAction } from 'src/lib';
+import { fetchData } from '../services/test-service';
+import { TestComponentState } from './test-types';
+import { MachineConfig } from 'xstate';
 
 // https://statecharts.github.io/xstate-viz/
 
-export const MachineState = {
-    START: 'START',
-    PROCESSING: 'PROCESSING',
-    LIST: 'LIST',
-    ERROR: 'ERROR',
-    SHOW_ITEM: 'SHOW_ITEM',
-    END: 'END'
+export interface TestMachineStateSchema {
+    states: {
+        START: {};
+        PROCESSING: {};
+        LIST: {};
+        ERROR: {};
+        SHOW_ITEM: {};
+    }
 }
 
-export const MachineAction = {
-    SUBMIT: 'SUBMIT',
-    CANCEL: 'CANCEL',
-    PROCESSED: 'PROCESSED',
-    ERROR: 'ERROR',
-    RESET: 'RESET',
-    NONE: 'NONE',
-    SELECT: 'SELECT',
-    EXIT: 'EXIT'
-}
+export type TestMachineEvents =
+    | { type: 'SUBMIT', extra: string }
+    | { type: 'CANCEL' }
+    | { type: 'RESET' }
+    | { type: 'SELECT' }
+    | { type: 'EXIT' };
 
-export const STATE_CHART = {
+export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSchema, TestMachineEvents> = {
+    id: 'test',
     initial: 'START',
     states: {
-        [MachineState.START]: {
+        START: {
             on: {
-                [MachineAction.SUBMIT]: {
-                    target: MachineState.PROCESSING,
-                    cond: 'checkStart'
+                SUBMIT: {
+                    target: 'PROCESSING',
+                    cond: (ctx: TestComponentState) => {
+                        return ctx.items.length === 0;
+                    }
                 }
             },
-            onEntry: 'resetContext'
+            onEntry: assign({
+                items: []
+            })
         },
-        [MachineState.PROCESSING]: {
-            on: {
-                [MachineAction.PROCESSED]: {
-                    target: MachineState.LIST,
-                    actions: 'updateList'
+        PROCESSING: {
+            invoke: {
+                src: (ctx: TestComponentState, e: StateMachineAction<TestComponentState>) => fetchData(e),
+                onDone: {
+                    target: 'LIST',
+                    actions: assign({
+                        items: (ctx: TestComponentState, event: StateMachineAction<TestComponentState>) => {
+                            return event.data.items;
+                        }
+                    })
                 },
-                [MachineAction.ERROR]: MachineState.ERROR
+                onError: {
+                    target: 'ERROR'
+                    // error: (ctx, event) => event.data
+                }
             }
         },
-        [MachineState.LIST]: {
+        LIST: {
             on: {
-                [MachineAction.RESET]: MachineState.START,
-                [MachineAction.SELECT]: MachineState.SHOW_ITEM
+                RESET: 'START',
+                SELECT: 'SHOW_ITEM'
             }
         },
-        [MachineState.SHOW_ITEM]: {
+        SHOW_ITEM: {
             on: {
-                [MachineAction.EXIT]: MachineState.LIST
+                EXIT: 'LIST'
             }
         },
-        [MachineState.ERROR]: {
+        ERROR: {
             on: {
-                [MachineAction.RESET]: MachineState.START
+                RESET: 'START'
             }
         }
     }
 };
 
-export interface TestComponentState {
-    items: string[];
+
+
+export const MACHINE_OPTIONS = {
 }
 
-// @TODO fix those
-export const MACHINE_OPTIONS = {
-    actions: {
-        resetContext: (ctx: TestComponentState, e: StateMachineOnEntryAction<TestComponentState>) => {
-            Object.assign(ctx, { items: [] });
-        },
-        updateList: (ctx: TestComponentState, e: StateMachineOnEntryAction<TestComponentState>) => {
-            const { data: { items } } = e;
-            if (items) {
-                Object.assign(ctx, { items });
-            }
-        }
-    },
-    guards: {
-        checkStart: (ctx: TestComponentState) => {
-            return ctx.items.length === 0;
-        }
-    }
-};
-
-// onEnter actions
-export const ON_ENTER_STATE_ACTIONS: StateMachineAction<TestComponentState> = new Map([
-    [
-        MachineState.PROCESSING,
-        async (params: Dictionary<string | number | boolean>) => {
-            let triggerAction = MachineAction.PROCESSED;
-            let items: string[] = [];
-            try {
-                items = await fakeAJAX(params);
-            } catch (e) {
-                triggerAction = MachineAction.ERROR;
-            }
-            return {
-                data: { items },
-                triggerAction // please create an StateMachineAction in state machine in order to change
-            };
-        }
-    ]
-]);
 
 export const INITIAL_STATE: TestComponentState = {
     items: []
