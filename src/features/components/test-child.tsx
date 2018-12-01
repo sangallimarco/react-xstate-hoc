@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { withStateMachine, StateMachineInjectedProps } from '../../lib';
-import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, TestChildMachineEvents } from '../configs/test-child-machine';
-import { StateValue } from 'xstate';
+import { withStateMachine, StateMachineInjectedProps, StateMachineStateName } from '../../lib';
+import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, TestChildMachineEvents, TestChildMachineStateSchema } from '../configs/test-child-machine';
 
-interface TestChildComponentProps extends StateMachineInjectedProps<{}, TestChildMachineEvents> {
+interface TestChildComponentProps extends StateMachineInjectedProps<{}, TestChildMachineStateSchema, TestChildMachineEvents> {
     onExit: () => void;
 }
 
@@ -11,15 +10,14 @@ export class TestChildBaseComponent extends React.PureComponent<TestChildCompone
 
     public render() {
         const { currentState } = this.props;
-        const { value: currentStateName } = currentState;
 
         return <div className="test-child" >
-            <h1>CHILD COMPONENT: {currentStateName}</h1>
-            {this.renderChild(currentStateName)}
+            <h1>CHILD COMPONENT: {currentState}</h1>
+            {this.renderChild(currentState)}
         </div>;
     }
 
-    private renderChild(currentStateName: StateValue) {
+    private renderChild(currentStateName: StateMachineStateName<TestChildMachineStateSchema>) {
         const { onExit } = this.props;
 
         switch (currentStateName) {

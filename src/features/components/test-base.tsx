@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { withStateMachine, StateMachineInjectedProps } from '../../lib';
-import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, TestMachineEvents } from '../configs/test-machine';
-import { StateValue } from 'xstate';
+import { withStateMachine, StateMachineInjectedProps, StateMachineStateName } from '../../lib';
+import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, TestMachineEvents, TestMachineStateSchema } from '../configs/test-machine';
 import { TestChildComponent } from './test-child';
 import './test.css';
 import { TestComponentState } from '../configs/test-types';
 
-interface TestComponentProps extends StateMachineInjectedProps<TestComponentState, TestMachineEvents> {
+interface TestComponentProps extends StateMachineInjectedProps<TestComponentState, TestMachineStateSchema, TestMachineEvents> {
     label?: string;
 }
 
@@ -14,17 +13,16 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
 
     public render() {
         const { currentState, context } = this.props;
-        const { value: currentStateValue } = currentState;
 
         return (<div className="test">
-            <h1>{currentStateValue}</h1>
+            <h1>{currentState}</h1>
             <div>
-                {this.renderChild(currentStateValue, context)}
+                {this.renderChild(currentState, context)}
             </div>
         </div>);
     }
 
-    private renderChild(currentStateValue: StateValue, context: TestComponentState) {
+    private renderChild(currentStateValue: StateMachineStateName<TestMachineStateSchema>, context: TestComponentState) {
         switch (currentStateValue) {
             case 'START':
                 return <button onClick={this.handleSubmit}>OK</button>;

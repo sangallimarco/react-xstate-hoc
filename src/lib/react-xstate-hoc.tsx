@@ -10,16 +10,17 @@ export const withStateMachine = <
     TEvent extends EventObject = EventObject
     >(
         Component: (
-            React.ComponentClass<TOriginalProps & StateMachineInjectedProps<TContext, TEvent>> |
-            React.StatelessComponent<TOriginalProps & StateMachineInjectedProps<TContext, TEvent>>),
+            React.ComponentClass<TOriginalProps & StateMachineInjectedProps<TContext, TStateSchema, TEvent>> |
+            React.StatelessComponent<TOriginalProps & StateMachineInjectedProps<TContext, TStateSchema, TEvent>>),
         config: MachineConfig<TContext, TStateSchema, TEvent>,
         options: MachineOptions<TContext, TEvent>,
         initialContext: TContext
     ) => {
 
-    type WrapperProps = Subtract<TOriginalProps, StateMachineInjectedProps<TContext, TEvent>>;
+    type WrapperProps = Subtract<TOriginalProps, StateMachineInjectedProps<TContext, TStateSchema, TEvent>>;
+    type StateName = keyof TStateSchema['states'];
 
-    return class StateMachine extends React.Component<WrapperProps, StateMachineHOCState<TContext>> {
+    return class StateMachine extends React.Component<WrapperProps, StateMachineHOCState<TContext, TStateSchema>> {
 
         // those should be private but TSC fails to export declarations
         public stateMachine = Machine(config, options, initialContext)
@@ -34,8 +35,8 @@ export const withStateMachine = <
             this.interpreter.stop();
         }
 
-        public readonly state: StateMachineHOCState<TContext> = {
-            currentState: this.stateMachine.initialState,
+        public readonly state: StateMachineHOCState<TContext, TStateSchema> = {
+            currentState: this.stateMachine.initialState.value as StateName,
             context: this.stateMachine.context as TContext
         }
 
@@ -58,7 +59,8 @@ export const withStateMachine = <
 
             if (changed && value !== this.currentStateName) {
                 this.currentStateName = value;
-                this.setState({ currentState: newState });
+                const newStateName = value as StateName;
+                this.setState({ currentState: newStateName });
             }
 
         }
