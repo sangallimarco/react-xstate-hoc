@@ -1,4 +1,4 @@
-import { StateMachineAction, } from '../../lib';
+// import { StateMachineAction, } from '../../lib';
 
 export const MachineState = {
     START: 'START',
@@ -37,7 +37,7 @@ export const MACHINE_OPTIONS = {
 };
 
 // onEnter actions
-export const ON_ENTER_STATE_ACTIONS: StateMachineAction<TestChildComponentState> = new Map();
+// export const ON_ENTER_STATE_ACTIONS: StateMachineAction<TestChildComponentState> = new Map();
 
 export const INITIAL_STATE: TestChildComponentState = {
     enabled: true

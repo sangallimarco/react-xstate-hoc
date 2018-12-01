@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { DefaultContext, State, Machine, EventObject, StateSchema, MachineConfig, StateValue, MachineOptions } from 'xstate';
 import { interpret } from 'xstate/lib/interpreter';
-import { omit } from 'lodash';
-import { StateMachineInjectedProps, StateMachineHOCState, Subtract, StateMachineActionArtifact, StateMachineAction } from './types';
+import { StateMachineInjectedProps, StateMachineHOCState, Subtract } from './types';
 
 export const withStateMachine = <
     TOriginalProps,
@@ -15,8 +14,7 @@ export const withStateMachine = <
             React.StatelessComponent<TOriginalProps & StateMachineInjectedProps<TOriginalState>>),
         config: MachineConfig<TOriginalState, TStateSchema, TEvent>,
         options: MachineOptions<TOriginalState, TEvent>,
-        initialContext: TOriginalState,
-        onEnterActions: StateMachineAction<TOriginalState>
+        initialContext: TOriginalState
     ) => {
 
     type WrapperProps = Subtract<TOriginalProps, StateMachineInjectedProps<TOriginalState>>;
@@ -57,30 +55,10 @@ export const withStateMachine = <
 
         public async _execute(newState: State<DefaultContext>, newStateEventObject: EventObject) {
             const { changed, value } = newState;
-            let params: Record<string, any> = {};
 
-            if (newStateEventObject.type) {
-                params = omit(newStateEventObject, 'type');
-            }
-
-            // should be in a service/function
             if (changed && value !== this.currentStateName) {
                 this.currentStateName = value;
                 this.setState({ currentState: newState });
-                if (onEnterActions) {
-                    const action = onEnterActions.get(value as string);
-                    if (action) {
-                        const actionArtifact: StateMachineActionArtifact<TOriginalState> = await action(params);
-                        const { data, triggerAction } = actionArtifact;
-                        if (triggerAction) {
-                            const newEvent = {
-                                type: triggerAction,
-                                data
-                            };
-                            this.interpreter.send(newEvent as any);
-                        }
-                    }
-                }
             }
 
         }

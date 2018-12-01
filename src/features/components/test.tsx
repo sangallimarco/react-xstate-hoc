@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withStateMachine, StateMachineInjectedProps } from '../../lib';
-import { TestComponentState, STATE_CHART, ON_ENTER_STATE_ACTIONS, MachineAction, MachineState, MACHINE_OPTIONS, INITIAL_STATE } from '../configs/test-machine';
+import { TestComponentState, STATE_CHART, MachineAction, MachineState, MACHINE_OPTIONS, INITIAL_STATE } from '../configs/test-machine';
 import { StateValue } from 'xstate';
 import { TestChildComponent } from './test-child';
 import './test.css';
@@ -60,6 +60,5 @@ export const TestComponent = withStateMachine(
     TestBaseComponent,
     STATE_CHART,
     MACHINE_OPTIONS,
-    INITIAL_STATE,
-    ON_ENTER_STATE_ACTIONS
+    INITIAL_STATE
 );

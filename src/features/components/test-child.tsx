@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withStateMachine, StateMachineInjectedProps } from '../../lib';
-import { STATE_CHART, ON_ENTER_STATE_ACTIONS, MACHINE_OPTIONS, INITIAL_STATE, MachineState, MachineAction } from '../configs/test-child-machine';
+import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, MachineState, MachineAction } from '../configs/test-child-machine';
 import { StateValue } from 'xstate';
 
 interface TestChildComponentProps extends StateMachineInjectedProps<{}> {
@@ -42,6 +42,5 @@ export const TestChildComponent = withStateMachine(
     TestChildBaseComponent,
     STATE_CHART,
     MACHINE_OPTIONS,
-    INITIAL_STATE,
-    ON_ENTER_STATE_ACTIONS
+    INITIAL_STATE
 );
