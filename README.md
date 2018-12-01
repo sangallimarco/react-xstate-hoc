@@ -114,7 +114,7 @@ import { omit } from 'lodash';
 import { fakeAJAX } from '../mocks/ajax';
 import { TestComponentState } from '../configs/test-types';
 
-export function fakeAJAX(params: Recordstring, <string | number | boolean>) {
+export function fakeAJAX(params: Record<string, <string | number | boolean>>) {
     return new Promise<string[]>((resolve, reject) => setTimeout(() => {
         const rnd = Math.random();
         if (rnd > 0.5) {
