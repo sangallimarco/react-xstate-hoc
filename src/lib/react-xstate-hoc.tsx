@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { State, Machine, EventObject, StateSchema, MachineConfig, StateValue, MachineOptions, DefaultContext } from 'xstate';
 import { interpret } from 'xstate/lib/interpreter';
-import { StateMachineInjectedProps, StateMachineHOCState, Subtract } from './types';
+import { StateMachineInjectedProps, StateMachineHOCState, Subtract, StateMachineStateName } from './types';
 
 export const withStateMachine = <
     TOriginalProps,
@@ -18,7 +18,6 @@ export const withStateMachine = <
     ) => {
 
     type WrapperProps = Subtract<TOriginalProps, StateMachineInjectedProps<TContext, TStateSchema, TEvent>>;
-    type StateName = keyof TStateSchema['states'];
 
     return class StateMachine extends React.Component<WrapperProps, StateMachineHOCState<TContext, TStateSchema>> {
 
@@ -36,7 +35,7 @@ export const withStateMachine = <
         }
 
         public readonly state: StateMachineHOCState<TContext, TStateSchema> = {
-            currentState: this.stateMachine.initialState.value as StateName,
+            currentState: this.stateMachine.initialState.value as StateMachineStateName<TStateSchema>,
             context: this.stateMachine.context as TContext
         }
 
@@ -59,7 +58,7 @@ export const withStateMachine = <
 
             if (changed && value !== this.currentStateName) {
                 this.currentStateName = value;
-                const newStateName = value as StateName;
+                const newStateName = value as StateMachineStateName<TStateSchema>;
                 this.setState({ currentState: newStateName });
             }
 
