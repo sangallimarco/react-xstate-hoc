@@ -1,7 +1,7 @@
 import * as React from 'react';
 import './App.css';
 
-import { TestComponent } from './features/components/test';
+import { TestComponent } from './features/components/test-base';
 
 class App extends React.Component {
   public render() {

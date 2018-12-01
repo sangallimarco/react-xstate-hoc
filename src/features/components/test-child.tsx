@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { withStateMachine, StateMachineInjectedProps } from '../../lib';
-import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, MachineState, MachineAction } from '../configs/test-child-machine';
+import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, TestChildMachineEvents } from '../configs/test-child-machine';
 import { StateValue } from 'xstate';
 
-interface TestChildComponentProps extends StateMachineInjectedProps<{}> {
+interface TestChildComponentProps extends StateMachineInjectedProps<{}, TestChildMachineEvents> {
     onExit: () => void;
 }
 
@@ -23,9 +23,9 @@ export class TestChildBaseComponent extends React.PureComponent<TestChildCompone
         const { onExit } = this.props;
 
         switch (currentStateName) {
-            case MachineState.START:
+            case 'asdad':
                 return <button onClick={this.handleSubmit}>SUBMIT CHILD</button>;
-            case MachineState.END:
+            case 'END':
                 return <button onClick={onExit}>RESET PARENT</button>;
             default:
                 return null;
@@ -34,7 +34,7 @@ export class TestChildBaseComponent extends React.PureComponent<TestChildCompone
 
     private handleSubmit = () => {
         const { dispatch } = this.props;
-        dispatch(MachineAction.STOP);
+        dispatch({ type: 'STOP' });
     }
 }
 

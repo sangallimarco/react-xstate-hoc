@@ -1,11 +1,11 @@
-import { DefaultContext, State, EventObject, OmniEvent } from 'xstate';
+import { State, EventObject, OmniEvent } from 'xstate';
 
-export interface StateMachineHOCState<TOriginalState> {
-    currentState: State<DefaultContext>;
-    context: TOriginalState
+export interface StateMachineHOCState<TContext> {
+    currentState: State<TContext>;
+    context: TContext
 }
 
-export interface StateMachineInjectedProps<TOriginalState, MachineEvents extends OmniEvent<EventObject>> extends StateMachineHOCState<TOriginalState> {
+export interface StateMachineInjectedProps<TContext, MachineEvents extends OmniEvent<EventObject>> extends StateMachineHOCState<TContext> {
     dispatch: (action: MachineEvents) => void;
 }
 

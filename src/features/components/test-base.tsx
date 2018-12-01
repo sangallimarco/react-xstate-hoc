@@ -4,7 +4,7 @@ import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, TestMachineEvents } from '
 import { StateValue } from 'xstate';
 import { TestChildComponent } from './test-child';
 import './test.css';
-import { TestComponentState } from '../types/test-types';
+import { TestComponentState } from '../configs/test-types';
 
 interface TestComponentProps extends StateMachineInjectedProps<TestComponentState, TestMachineEvents> {
     label?: string;

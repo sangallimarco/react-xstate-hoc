@@ -1,7 +1,7 @@
 import { assign } from 'xstate/lib/actions';
 import { StateMachineAction } from 'src/lib';
 import { fetchData } from '../services/test-service';
-import { TestComponentState } from '../types/test-types';
+import { TestComponentState } from './test-types';
 import { MachineConfig } from 'xstate';
 
 // https://statecharts.github.io/xstate-viz/

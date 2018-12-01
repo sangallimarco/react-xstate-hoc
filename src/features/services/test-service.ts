@@ -1,7 +1,7 @@
 import { StateMachineAction } from 'src/lib';
 import { omit } from 'lodash';
 import { fakeAJAX } from '../mocks/ajax';
-import { TestComponentState } from '../types/test-types';
+import { TestComponentState } from '../configs/test-types';
 
 export async function fetchData(e: StateMachineAction<TestComponentState>) {
     const params = omit(e, 'type');
