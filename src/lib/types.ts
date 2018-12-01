@@ -5,11 +5,11 @@ export interface StateMachineHOCState<TOriginalState> {
     context: TOriginalState
 }
 
-export interface StateMachineInjectedProps<TOriginalState> extends StateMachineHOCState<TOriginalState> {
-    dispatch: (action: OmniEvent<EventObject>) => void;
+export interface StateMachineInjectedProps<TOriginalState, MachineEvents extends OmniEvent<EventObject>> extends StateMachineHOCState<TOriginalState> {
+    dispatch: (action: MachineEvents) => void;
 }
 
-export interface StateMachineOnEntryAction<T> extends EventObject {
+export interface StateMachineAction<T> extends EventObject {
     data: Partial<T>
 }
 

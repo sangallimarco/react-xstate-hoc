@@ -1,38 +1,36 @@
 import { assign } from 'xstate/lib/actions';
-import { StateMachineOnEntryAction } from 'src/lib';
+import { StateMachineAction } from 'src/lib';
 import { fetchData } from '../services/test-service';
 import { TestComponentState } from '../types/test-types';
+import { MachineConfig } from 'xstate';
 
 // https://statecharts.github.io/xstate-viz/
 
-export const MachineState = {
-    START: 'START',
-    PROCESSING: 'PROCESSING',
-    LIST: 'LIST',
-    ERROR: 'ERROR',
-    SHOW_ITEM: 'SHOW_ITEM',
-    END: 'END'
-}
-
-export const MachineAction = {
-    SUBMIT: 'SUBMIT',
-    CANCEL: 'CANCEL',
-    PROCESSED: 'PROCESSED',
-    ERROR: 'ERROR',
-    RESET: 'RESET',
-    NONE: 'NONE',
-    SELECT: 'SELECT',
-    EXIT: 'EXIT'
-}
-
-export const STATE_CHART = {
-    id: 'test',
-    initial: MachineState.START,
+export interface TestMachineStateSchema {
     states: {
-        [MachineState.START]: {
+        START: {};
+        PROCESSING: {};
+        LIST: {};
+        ERROR: {};
+        SHOW_ITEM: {};
+    }
+}
+
+export type TestMachineEvents =
+    | { type: 'SUBMIT', extra: string }
+    | { type: 'CANCEL' }
+    | { type: 'RESET' }
+    | { type: 'SELECT' }
+    | { type: 'EXIT' };
+
+export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSchema, TestMachineEvents> = {
+    id: 'test',
+    initial: 'START',
+    states: {
+        START: {
             on: {
-                [MachineAction.SUBMIT]: {
-                    target: MachineState.PROCESSING,
+                SUBMIT: {
+                    target: 'PROCESSING',
                     cond: (ctx: TestComponentState) => {
                         return ctx.items.length === 0;
                     }
@@ -42,37 +40,37 @@ export const STATE_CHART = {
                 items: []
             })
         },
-        [MachineState.PROCESSING]: {
+        PROCESSING: {
             invoke: {
-                src: (ctx: TestComponentState, e: StateMachineOnEntryAction<TestComponentState>) => fetchData(e),
+                src: (ctx: TestComponentState, e: StateMachineAction<TestComponentState>) => fetchData(e),
                 onDone: {
-                    target: MachineState.LIST,
+                    target: 'LIST',
                     actions: assign({
-                        items: (ctx: TestComponentState, event: StateMachineOnEntryAction<TestComponentState>) => {
+                        items: (ctx: TestComponentState, event: StateMachineAction<TestComponentState>) => {
                             return event.data.items;
                         }
                     })
                 },
                 onError: {
-                    target: MachineState.ERROR
+                    target: 'ERROR'
                     // error: (ctx, event) => event.data
                 }
             }
         },
-        [MachineState.LIST]: {
+        LIST: {
             on: {
-                [MachineAction.RESET]: MachineState.START,
-                [MachineAction.SELECT]: MachineState.SHOW_ITEM
+                RESET: 'START',
+                SELECT: 'SHOW_ITEM'
             }
         },
-        [MachineState.SHOW_ITEM]: {
+        SHOW_ITEM: {
             on: {
-                [MachineAction.EXIT]: MachineState.LIST
+                EXIT: 'LIST'
             }
         },
-        [MachineState.ERROR]: {
+        ERROR: {
             on: {
-                [MachineAction.RESET]: MachineState.START
+                RESET: 'START'
             }
         }
     }

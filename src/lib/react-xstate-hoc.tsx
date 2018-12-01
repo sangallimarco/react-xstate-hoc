@@ -5,19 +5,19 @@ import { StateMachineInjectedProps, StateMachineHOCState, Subtract } from './typ
 
 export const withStateMachine = <
     TOriginalProps,
+    TStateSchema extends StateSchema,
     TOriginalState extends {} = {},
-    TStateSchema extends StateSchema = any,
     TEvent extends EventObject = EventObject
     >(
         Component: (
-            React.ComponentClass<TOriginalProps & StateMachineInjectedProps<TOriginalState>> |
-            React.StatelessComponent<TOriginalProps & StateMachineInjectedProps<TOriginalState>>),
+            React.ComponentClass<TOriginalProps & StateMachineInjectedProps<TOriginalState, TEvent>> |
+            React.StatelessComponent<TOriginalProps & StateMachineInjectedProps<TOriginalState, TEvent>>),
         config: MachineConfig<TOriginalState, TStateSchema, TEvent>,
         options: MachineOptions<TOriginalState, TEvent>,
         initialContext: TOriginalState
     ) => {
 
-    type WrapperProps = Subtract<TOriginalProps, StateMachineInjectedProps<TOriginalState>>;
+    type WrapperProps = Subtract<TOriginalProps, StateMachineInjectedProps<TOriginalState, TEvent>>;
 
     return class StateMachine extends React.Component<WrapperProps, StateMachineHOCState<TOriginalState>> {
 
