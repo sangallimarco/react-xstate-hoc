@@ -1,108 +1,120 @@
 ## React Xstate HOC
 Integrates the Xstate lib with Reactjs. Please follow this link for more details about Xstate https://xstate.js.org/docs/
 
+## Example
+Please find the example [here: https://github.com/sangallimarco/react-xstate-hoc/tree/master/src/features]
+
+
 ### HOW TO
 
 Define your State Machine
 
 ```typescript
-import { StateMachineAction, StateMachineOnEntryAction } from 'react-xstate-hoc';
+// file: configs/test-machine.ts
+
+import { StateMachineAction } from 'react-xstate-hoc';
 import { assign } from 'xstate/lib/actions';
+import { fetchData } from '../services/test-service'; // described here below
+import { MachineConfig } from 'xstate';
 
 export interface TestComponentState {
     items: string[];
 }
 
-export const MachineState = {
-    START: 'START',
-    PROCESSING: 'PROCESSING',
-    LIST: 'LIST',
-    ERROR: 'ERROR',
-    SHOW_ITEM: 'SHOW_ITEM',
-    END: 'END'
+export interface TestMachineStateSchema {
+    states: {
+        START: {};
+        PROCESSING: {};
+        LIST: {};
+        ERROR: {};
+        SHOW_ITEM: {};
+    }
 }
 
-export const MachineAction = {
-    SUBMIT: 'SUBMIT',
-    CANCEL: 'CANCEL',
-    PROCESSED: 'PROCESSED',
-    ERROR: 'ERROR',
-    RESET: 'RESET',
-    NONE: 'NONE'
-}
+export type TestMachineEvents =
+    | { type: 'SUBMIT', extra: string }
+    | { type: 'CANCEL' }
+    | { type: 'RESET' }
+    | { type: 'SELECT' }
+    | { type: 'EXIT' };
 
-export const STATE_CHART = {
+export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSchema, TestMachineEvents> = {
+    id: 'test',
     initial: 'START',
     states: {
-        [MachineState.START]: {
+        START: {
             on: {
                 SUBMIT: {
-                    target: MachineState.PROCESSING
+                    target: 'PROCESSING',
+                    cond: (ctx: TestComponentState) => {
+                        return ctx.items.length === 0;
+                    }
                 }
             },
-            onEntry: assign((ctx: TestComponentState) => ({ items: [] }))
+            onEntry: assign({
+                items: []
+            })
         },
-        [MachineState.PROCESSING]: {
-            on: {
-                PROCESSED: {
-                    target: MachineState.LIST,
-                    actions: assign((ctx: TestComponentState, e: StateMachineOnEntryAction<TestComponentState>) => {
-                        const { data: { items } } = e;
-                        return { items };
+        PROCESSING: {
+            invoke: {
+                src: (ctx: TestComponentState, e: StateMachineAction<TestComponentState>) => fetchData(e),
+                onDone: {
+                    target: 'LIST',
+                    actions: assign({
+                        items: (ctx: TestComponentState, event: StateMachineAction<TestComponentState>) => {
+                            return event.data.items;
+                        }
                     })
                 },
-                ERROR: 'ERROR'
+                onError: {
+                    target: 'ERROR'
+                    // error: (ctx, event) => event.data
+                }
             }
         },
-        [MachineState.LIST]: {
+        LIST: {
             on: {
-                RESET: MachineState.START,
+                RESET: 'START',
                 SELECT: 'SHOW_ITEM'
             }
         },
-        [MachineState.SHOW_ITEM]: {
+        SHOW_ITEM: {
             on: {
-                EXIT: MachineState.LIST
+                EXIT: 'LIST'
             }
         },
-        [MachineState.ERROR]: {
+        ERROR: {
             on: {
-                RESET: MachineState.START
+                RESET: 'START'
             }
         }
     }
 };
-```
 
-You can even pass a dictionary of functions instead of assigning a function to `actions` attribute. In order to link the two, just add a `label` to `actions` in the config here above.
-
-
-```typescript
 export const MACHINE_OPTIONS = {
-    actions: {
-        resetContext: (ctx: TestComponentState, e: StateMachineOnEntryAction<TestComponentState>) => {
-            // do something here
-        },
-        updateList: (ctx: TestComponentState, e: StateMachineOnEntryAction<TestComponentState>) => {
-            // do something here
-        }
-    },
-    guards: {
-        checkStart: (ctx: TestComponentState) => {
-            return ctx.items.length === 0;
-        }
-    }
+}
+
+
+export const INITIAL_STATE: TestComponentState = {
+    items: []
 };
+
 
 ```
 
-### Async Actions on Enter
+### Async Actions
 
 If you need to play with server side calls then add a configuration for those actions.
 
 ```typescript
-// test only 
-function fakeAJAX(params: Dictionary<string | number | boolean>) {
+// file: services/test-service.ts
+
+import { StateMachineAction } from 'react-xstate-hoc';
+import { omit } from 'lodash';
+import { fakeAJAX } from '../mocks/ajax';
+import { TestComponentState } from '../configs/test-types';
+
+export function fakeAJAX(params: Recordstring, <string | number | boolean>) {
     return new Promise<string[]>((resolve, reject) => setTimeout(() => {
         const rnd = Math.random();
         if (rnd > 0.5) {
@@ -114,25 +126,17 @@ function fakeAJAX(params: Dictionary<string | number | boolean>) {
     );
 }
 
-// onEnter actions
-export const ON_ENTER_STATE_ACTIONS: StateMachineAction<TestComponentState> = new Map([
-    [
-        MachineState.PROCESSING,
-        async (params: Dictionary<string | number | boolean>) => {
-            let triggerAction = MachineAction.PROCESSED;
-            let items: string[] = [];
-            try {
-                items = await fakeAJAX(params);
-            } catch (e) {
-                triggerAction = MachineAction.ERROR;
-            }
-            return {
-                data: { items },
-                triggerAction // please create an action on state machine config in order to reflect changes in context
-            };
-        }
-    ]
-]);
+export async function fetchData(e: StateMachineAction<TestComponentState>) {
+    const params = omit(e, 'type');
+    let items: string[] = [];
+    try {
+        items = await fakeAJAX(params);
+        return { items };
+    } catch (e) {
+        throw new Error('Something Wrong');
+    }
+}
+
 ```
 
 
@@ -141,12 +145,14 @@ export const ON_ENTER_STATE_ACTIONS: StateMachineAction<TestComponentState> = ne
 Let's now link the component to the state machine using `withStateMachine`.
 
 ```typescript
-import * as React from 'react';
-import { withStateMachine, StateMachineInjectedProps } from 'react-xstate-hoc';
-import { TestComponentState, STATE_CHART, ON_ENTER_STATE_ACTIONS, MachineAction, MachineState, MACHINE_OPTIONS, INITIAL_STATE } from './test-machine';
-import { StateValue } from 'xstate';
+// file: test-base.tsx
 
-interface TestComponentProps extends StateMachineInjectedProps<TestComponentState> {
+import * as React from 'react';
+import { withStateMachine, StateMachineInjectedProps, StateMachineStateName } from 'react-xstate-hoc';
+import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, TestMachineEvents, TestMachineStateSchema, TestComponentState } from '../configs/test-machine';
+import './test.css';
+
+interface TestComponentProps extends StateMachineInjectedProps<TestComponentState, TestMachineStateSchema, TestMachineEvents> {
     label?: string;
 }
 
@@ -154,41 +160,44 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
 
     public render() {
         const { currentState, context } = this.props;
-        const { value: currentStateName } = currentState;
 
-        return (<div>
-            <h1>{currentStateName}</h1>
-            <ul>
-                {this.renderItems(context.items)}
-            </ul>
-            {this.renderButton(currentStateName)}
-            <button onClick={this.handleSubmit}>SUBMIT</button>
+        return (<div className="test">
+            <h1>{currentState}</h1>
+            <div>
+                {this.renderChild(currentState, context)}
+            </div>
         </div>);
     }
 
-    private renderButton(currentStateName: StateValue) {
-        switch (currentStateName) {
-            case MachineState.START:
+    private renderChild(currentStateValue: StateMachineStateName<TestMachineStateSchema>, context: TestComponentState) {
+        switch (currentStateValue) {
+            case 'START':
                 return <button onClick={this.handleSubmit}>OK</button>;
-            case MachineState.LIST:
-                return <button onClick={this.handleReset}>RESET</button>;
-            case MachineState.ERROR:
-                return <button onClick={this.handleReset}>RE-START</button>;
+            case 'LIST':
+                return <div>
+                    <div className="test-list">
+                        {this.renderItems(context.items)}
+                    </div>
+                </div>;
+            case 'ERROR':
+                return <div className="test-error-box">
+                    <button onClick={this.handleReset}>RESET</button>
+                </div>;
             default:
                 return null;
         }
     }
 
     private renderItems(items: string[]) {
-        return items.map((item, i) => <li key={i}>{item}</li>);
+        return items.map((item, i) => <div className="test-list-item" key={i}>{item}</div>);
     }
 
     private handleSubmit = () => {
-        this.props.dispatch({ type: MachineAction.SUBMIT, extra: 'ok' });
+        this.props.dispatch({ type: 'SUBMIT', extra: 'ok' });
     }
 
     private handleReset = () => {
-        this.props.dispatch(MachineAction.RESET);
+        this.props.dispatch({ type: 'RESET' });
     }
 }
 
@@ -196,9 +205,7 @@ export const TestComponent = withStateMachine(
     TestBaseComponent,
     STATE_CHART,
     MACHINE_OPTIONS,
-    INITIAL_STATE,
-    ON_ENTER_STATE_ACTIONS
+    INITIAL_STATE
 );
-
 
 ```
