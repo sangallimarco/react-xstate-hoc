@@ -26,7 +26,7 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
 
     private renderChild(currentStateValue: StateValue, context: TestComponentState) {
         switch (currentStateValue) {
-            case '':
+            case 'START':
                 return <button onClick={this.handleSubmit}>OK</button>;
             case 'LIST':
                 return <div>

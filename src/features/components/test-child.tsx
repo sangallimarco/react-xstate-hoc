@@ -23,7 +23,7 @@ export class TestChildBaseComponent extends React.PureComponent<TestChildCompone
         const { onExit } = this.props;
 
         switch (currentStateName) {
-            case 'asdad':
+            case 'START':
                 return <button onClick={this.handleSubmit}>SUBMIT CHILD</button>;
             case 'END':
                 return <button onClick={onExit}>RESET PARENT</button>;
