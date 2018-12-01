@@ -5,7 +5,7 @@ import { StateMachineInjectedProps, StateMachineHOCState, Subtract, StateMachine
 
 export const withStateMachine = <
     TOriginalProps,
-    TStateSchema extends StateSchema = any,
+    TStateSchema extends StateSchema,
     TContext = DefaultContext,
     TEvent extends EventObject = EventObject
     >(
