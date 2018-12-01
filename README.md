@@ -2,7 +2,7 @@
 Integrates the Xstate lib with Reactjs. Please follow this link for more details about Xstate https://xstate.js.org/docs/
 
 ## Example
-Please find the example [here: https://github.com/sangallimarco/react-xstate-hoc/tree/master/src/features]
+Please find the example here https://github.com/sangallimarco/react-xstate-hoc/tree/master/src/features
 
 
 ### HOW TO
