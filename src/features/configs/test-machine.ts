@@ -6,13 +6,29 @@ import { StateMachineAction } from '../../lib';
 
 // https://statecharts.github.io/xstate-viz/
 
+export enum TestMachineState {
+    START = 'START',
+    PROCESSING = 'PROCESSING',
+    LIST = 'LIST',
+    ERROR = 'ERROR',
+    SHOW_ITEM = 'SHOW_ITEM'
+}
+
+export enum TestMachineAction {
+    SUBMIT = 'SUBMIT',
+    CANCEL = 'CANCEL',
+    RESET = 'RESET',
+    SELECT = 'SELECT',
+    EXIT = 'EXIT'
+}
+
 export interface TestMachineStateSchema {
     states: {
-        START: {};
-        PROCESSING: {};
-        LIST: {};
-        ERROR: {};
-        SHOW_ITEM: {};
+        [TestMachineState.START]: {};
+        [TestMachineState.PROCESSING]: {};
+        [TestMachineState.LIST]: {};
+        [TestMachineState.ERROR]: {};
+        [TestMachineState.SHOW_ITEM]: {};
     }
 }
 
@@ -25,12 +41,12 @@ export type TestMachineEvents =
 
 export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSchema, TestMachineEvents> = {
     id: 'test',
-    initial: 'START',
+    initial: TestMachineState.START,
     states: {
-        START: {
+        [TestMachineState.START]: {
             on: {
-                SUBMIT: {
-                    target: 'PROCESSING',
+                [TestMachineAction.SUBMIT]: {
+                    target: TestMachineState.PROCESSING,
                     cond: (ctx: TestComponentState) => {
                         return ctx.items.length === 0;
                     }
@@ -40,11 +56,11 @@ export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSche
                 items: []
             })
         },
-        PROCESSING: {
+        [TestMachineState.PROCESSING]: {
             invoke: {
                 src: (ctx: TestComponentState, e: StateMachineAction<TestComponentState>) => fetchData(e),
                 onDone: {
-                    target: 'LIST',
+                    target: TestMachineState.LIST,
                     actions: assign({
                         items: (ctx: TestComponentState, event: StateMachineAction<TestComponentState>) => {
                             return event.data.items;
@@ -52,25 +68,25 @@ export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSche
                     })
                 },
                 onError: {
-                    target: 'ERROR'
+                    target: TestMachineState.ERROR
                     // error: (ctx, event) => event.data
                 }
             }
         },
-        LIST: {
+        [TestMachineState.LIST]: {
             on: {
-                RESET: 'START',
-                SELECT: 'SHOW_ITEM'
+                [TestMachineAction.RESET]: TestMachineState.START,
+                [TestMachineAction.SELECT]: TestMachineState.SHOW_ITEM
             }
         },
-        SHOW_ITEM: {
+        [TestMachineState.SHOW_ITEM]: {
             on: {
-                EXIT: 'LIST'
+                [TestMachineAction.EXIT]: TestMachineState.LIST
             }
         },
-        ERROR: {
+        [TestMachineState.ERROR]: {
             on: {
-                RESET: 'START'
+                [TestMachineAction.RESET]: TestMachineState.START
             }
         }
     }

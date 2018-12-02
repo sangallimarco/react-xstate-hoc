@@ -1,27 +1,37 @@
 import { MachineConfig } from 'xstate';
 
+export enum TestChildStates {
+    START = 'START',
+    END = 'END'
+}
+
+export enum TestChildActions {
+    STOP = 'STOP',
+    DEFAULT = 'DEFAULT'
+}
+
 export interface TestChildMachineStateSchema {
     states: {
-        START: {};
-        END: {};
+        [TestChildStates.START]: {};
+        [TestChildStates.END]: {};
     }
 }
 
 export type TestChildMachineEvents =
-    | { type: 'STOP' }
-    | { type: 'DEFAULT' };
+    | { type: TestChildActions.STOP }
+    | { type: TestChildActions.DEFAULT };
 
 export const STATE_CHART: MachineConfig<{}, TestChildMachineStateSchema, TestChildMachineEvents> = {
-    initial: 'START',
+    initial: TestChildStates.START,
     states: {
-        START: {
+        [TestChildStates.START]: {
             on: {
-                STOP: {
+                [TestChildActions.STOP]: {
                     target: 'END'
                 }
             }
         },
-        END: {
+        [TestChildStates.END]: {
         }
     }
 };

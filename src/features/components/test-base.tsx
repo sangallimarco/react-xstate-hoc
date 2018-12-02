@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { withStateMachine, StateMachineInjectedProps, StateMachineStateName } from '../../lib';
-import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, TestMachineEvents, TestMachineStateSchema } from '../configs/test-machine';
+import { withStateMachine, StateMachineInjectedProps } from '../../lib';
+import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, TestMachineEvents, TestMachineStateSchema, TestMachineAction, TestMachineState } from '../configs/test-machine';
 import { TestChildComponent } from './test-child';
 import './test.css';
 import { TestComponentState } from '../configs/test-types';
@@ -22,18 +22,18 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
         </div>);
     }
 
-    private renderChild(currentStateValue: StateMachineStateName<TestMachineStateSchema>, context: TestComponentState) {
+    private renderChild(currentStateValue: TestMachineState, context: TestComponentState) {
         switch (currentStateValue) {
-            case 'START':
+            case TestMachineState.START:
                 return <button onClick={this.handleSubmit}>OK</button>;
-            case 'LIST':
+            case TestMachineState.LIST:
                 return <div>
                     <div className="test-list">
                         {this.renderItems(context.items)}
                     </div>
                     <TestChildComponent onExit={this.handleReset} />
                 </div>;
-            case 'ERROR':
+            case TestMachineState.ERROR:
                 return <div className="test-error-box">
                     <button onClick={this.handleReset}>RESET</button>
                 </div>;
@@ -47,11 +47,11 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
     }
 
     private handleSubmit = () => {
-        this.props.dispatch({ type: 'SUBMIT', extra: 'ok' });
+        this.props.dispatch({ type: TestMachineAction.SUBMIT, extra: 'ok' });
     }
 
     private handleReset = () => {
-        this.props.dispatch({ type: 'RESET' });
+        this.props.dispatch({ type: TestMachineAction.RESET });
     }
 }
 
