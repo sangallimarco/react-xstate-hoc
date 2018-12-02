@@ -33,11 +33,11 @@ export interface TestMachineStateSchema {
 }
 
 export type TestMachineEvents =
-    | { type: 'SUBMIT', extra: string }
-    | { type: 'CANCEL' }
-    | { type: 'RESET' }
-    | { type: 'SELECT' }
-    | { type: 'EXIT' };
+    | { type: TestMachineAction.SUBMIT, extra: string }
+    | { type: TestMachineAction.CANCEL }
+    | { type: TestMachineAction.RESET }
+    | { type: TestMachineAction.SELECT }
+    | { type: TestMachineAction.EXIT };
 
 export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSchema, TestMachineEvents> = {
     id: 'test',
