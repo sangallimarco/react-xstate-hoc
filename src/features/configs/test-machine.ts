@@ -1,4 +1,4 @@
-import { assign } from 'xstate/lib/actions';
+import { assign, log } from 'xstate/lib/actions';
 import { fetchData } from '../services/test-service';
 import { TestComponentState } from './test-types';
 import { MachineConfig } from 'xstate';
@@ -68,8 +68,8 @@ export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSche
                     })
                 },
                 onError: {
-                    target: TestMachineState.ERROR
-                    // error: (ctx, event) => event.data
+                    target: TestMachineState.ERROR,
+                    actions: log((ctx: TestComponentState, event: StateMachineAction<TestComponentState>) => event.data)
                 }
             }
         },
