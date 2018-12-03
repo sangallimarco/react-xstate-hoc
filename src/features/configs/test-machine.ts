@@ -39,6 +39,8 @@ export type TestMachineEvents =
     | { type: TestMachineAction.SELECT }
     | { type: TestMachineAction.EXIT };
 
+type EventType = StateMachineAction<TestComponentState>;
+
 export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSchema, TestMachineEvents> = {
     id: 'test',
     initial: TestMachineState.START,
@@ -47,29 +49,28 @@ export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSche
             on: {
                 [TestMachineAction.SUBMIT]: {
                     target: TestMachineState.PROCESSING,
-                    cond: (ctx: TestComponentState) => {
-                        return ctx.items.length === 0;
-                    }
+                    cond: (ctx: TestComponentState) => ctx.cnt < 10 // run N times
                 }
             },
             onEntry: assign({
-                items: []
+                items: [],
+                cnt: (ctx: TestComponentState) => ctx.cnt + 1
             })
         },
         [TestMachineState.PROCESSING]: {
             invoke: {
-                src: (ctx: TestComponentState, e: StateMachineAction<TestComponentState>) => fetchData(e),
+                src: (ctx: TestComponentState, e: EventType) => fetchData(e),
                 onDone: {
                     target: TestMachineState.LIST,
                     actions: assign({
-                        items: (ctx: TestComponentState, event: StateMachineAction<TestComponentState>) => {
-                            return event.data.items;
+                        items: (ctx: TestComponentState, e: EventType) => {
+                            return e.data.items;
                         }
                     })
                 },
                 onError: {
                     target: TestMachineState.ERROR,
-                    actions: log((ctx: TestComponentState, event: StateMachineAction<TestComponentState>) => event.data)
+                    actions: log((ctx: TestComponentState, e: EventType) => e.data)
                 }
             }
         },
@@ -99,5 +100,6 @@ export const MACHINE_OPTIONS = {
 
 
 export const INITIAL_STATE: TestComponentState = {
-    items: []
+    items: [],
+    cnt: 0
 };

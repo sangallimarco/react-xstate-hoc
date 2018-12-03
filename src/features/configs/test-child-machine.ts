@@ -27,7 +27,7 @@ export const STATE_CHART: MachineConfig<{}, TestChildMachineStateSchema, TestChi
         [TestChildStates.START]: {
             on: {
                 [TestChildActions.STOP]: {
-                    target: 'END'
+                    target: TestChildStates.END
                 }
             }
         },
