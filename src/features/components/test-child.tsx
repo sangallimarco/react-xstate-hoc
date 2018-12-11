@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { withStateMachine, StateMachineInjectedProps, StateMachineStateName } from '../../lib';
-import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, TestChildMachineEvents, TestChildMachineStateSchema } from '../configs/test-child-machine';
+import { withStateMachine, StateMachineInjectedProps } from '../../lib';
+import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, TestChildMachineEvents, TestChildMachineStateSchema, TestChildActions, TestChildStates } from '../configs/test-child-machine';
 
 interface TestChildComponentProps extends StateMachineInjectedProps<{}, TestChildMachineStateSchema, TestChildMachineEvents> {
     onExit: () => void;
@@ -17,13 +17,13 @@ export class TestChildBaseComponent extends React.PureComponent<TestChildCompone
         </div>;
     }
 
-    private renderChild(currentStateName: StateMachineStateName<TestChildMachineStateSchema>) {
+    private renderChild(currentStateName: TestChildStates) {
         const { onExit } = this.props;
 
         switch (currentStateName) {
-            case 'START':
+            case TestChildStates.START:
                 return <button onClick={this.handleSubmit}>SUBMIT CHILD</button>;
-            case 'END':
+            case TestChildStates.END:
                 return <button onClick={onExit}>RESET PARENT</button>;
             default:
                 return null;
@@ -32,7 +32,7 @@ export class TestChildBaseComponent extends React.PureComponent<TestChildCompone
 
     private handleSubmit = () => {
         const { dispatch } = this.props;
-        dispatch({ type: 'STOP' });
+        dispatch({ type: TestChildActions.STOP });
     }
 }
 
