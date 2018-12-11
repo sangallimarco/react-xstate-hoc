@@ -53,8 +53,7 @@ export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSche
                 }
             },
             onEntry: assign({
-                items: [],
-                cnt: (ctx: TestComponentState) => ctx.cnt + 1
+                items: []
             })
         },
         [TestMachineState.PROCESSING]: {
@@ -78,7 +77,10 @@ export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSche
             on: {
                 [TestMachineAction.RESET]: TestMachineState.START,
                 [TestMachineAction.SELECT]: TestMachineState.SHOW_ITEM
-            }
+            },
+            onEntry: assign({
+                cnt: (ctx: TestComponentState) => ctx.cnt + 1
+            })
         },
         [TestMachineState.SHOW_ITEM]: {
             on: {
