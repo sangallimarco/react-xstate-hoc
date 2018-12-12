@@ -1,15 +1,29 @@
 import * as React from 'react';
 import { withStateMachine, StateMachineInjectedProps } from '../../lib';
-import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, TestMachineEvents, TestMachineStateSchema, TestMachineAction, TestMachineState } from '../configs/test-machine';
+import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, TestMachineEvents, TestMachineStateSchema, TestMachineAction, TestMachineState, TestMachineEventType, TestMachineService } from '../configs/test-machine';
 import { TestChildComponent } from './test-child';
 import './test.css';
 import { TestComponentState } from '../configs/test-types';
+import { fetchData } from '../services/test-service';
 
 interface TestComponentProps extends StateMachineInjectedProps<TestComponentState, TestMachineStateSchema, TestMachineEvents> {
     label?: string;
 }
 
 export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
+
+    public componentDidMount() {
+        const { injectConfig } = this.props;
+        injectConfig({
+            services: {
+                [TestMachineService.FETCH_DATA]: (ctx: TestComponentState, e: TestMachineEventType) => this.onSend(e)
+            }
+        });
+    }
+
+    public onSend(e: TestMachineEventType) {
+        return fetchData(e);
+    }
 
     public render() {
         const { currentState, context } = this.props;

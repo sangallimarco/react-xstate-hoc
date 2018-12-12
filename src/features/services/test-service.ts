@@ -1,9 +1,8 @@
-import { StateMachineAction } from '../../lib';
 import { omit } from 'lodash';
 import { fakeAJAX } from '../mocks/ajax';
-import { TestComponentState } from '../configs/test-types';
+import { TestMachineEventType } from '../configs/test-machine';
 
-export async function fetchData(e: StateMachineAction<TestComponentState>) {
+export async function fetchData(e: TestMachineEventType) {
     const params = omit(e, 'type');
     let items: string[] = [];
     try {

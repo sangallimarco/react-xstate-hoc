@@ -22,13 +22,13 @@ export const withStateMachine = <
     return class StateMachine extends React.Component<WrapperProps, StateMachineHOCState<TContext, TStateSchema>> {
 
         // those should be private but TSC fails to export declarations
-        public stateMachine = Machine(config, options, initialContext)
+        public stateMachine = Machine(config, {}, initialContext)
         public interpreter = interpret(this.stateMachine);
         public currentStateName: StateValue;
 
-        public componentDidMount() {
-            this.interpreter.start();
-        }
+        // public componentDidMount() {
+        //     this.interpreter.start();
+        // }
 
         public componentWillUnmount() {
             this.interpreter.stop();
@@ -41,16 +41,26 @@ export const withStateMachine = <
 
         constructor(props: TOriginalProps) {
             super(props);
-            this.interpreter.onTransition((current) => this._execute(current));
-            this.interpreter.onChange((context) => {
-                this.setState({ context })
-            });
+            // this.setMachineOptions(options);
         }
 
         public render(): JSX.Element {
             return (
-                <Component {...this.props} {...this.state} dispatch={this.interpreter.send} />
+                <Component {...this.props} {...this.state} dispatch={this.interpreter.send} injectConfig={this.setMachineOptions} />
             );
+        }
+
+        public setMachineOptions = (configOptions: any) => { // MachineOptions<TContext, TEvent> broken type
+            this.interpreter.stop();
+
+            this.stateMachine = Machine(config, configOptions, initialContext);
+            this.interpreter = interpret(this.stateMachine);
+            this.interpreter.onTransition((current) => this._execute(current));
+            this.interpreter.onChange((context) => {
+                this.setState({ context })
+            });
+
+            this.interpreter.start();
         }
 
         public async _execute(newState: State<any, EventObject>) {
