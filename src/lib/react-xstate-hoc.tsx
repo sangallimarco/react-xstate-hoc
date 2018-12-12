@@ -55,7 +55,7 @@ export const withStateMachine = <
 
         public setMachineOptions = (configOptions: MachineOptions<TContext, TEvent>) => {
             this.stateMachine = Machine(config, configOptions, initialContext);
-        }
+        };
 
         public async _execute(newState: State<any, EventObject>) {
             const { changed, value } = newState;
@@ -65,13 +65,12 @@ export const withStateMachine = <
                 const newStateName = value as StateMachineStateName<TStateSchema>;
                 this.setState({ currentState: newStateName });
             }
-
         }
 
         public handleDispatch = (action: TEvent) => {
             if (this.interpreter) {
                 this.interpreter.send(action);
             }
-        }
+        };
     };
 };
