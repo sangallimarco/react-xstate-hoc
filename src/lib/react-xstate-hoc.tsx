@@ -38,7 +38,6 @@ export const withStateMachine = <
             this.interpreter.onChange((context) => {
                 this.setState({ context })
             });
-
             this.interpreter.start();
         }
 
@@ -53,10 +52,6 @@ export const withStateMachine = <
             );
         }
 
-        public setMachineOptions = (configOptions: MachineOptions<TContext, TEvent>) => {
-            this.stateMachine = Machine(config, configOptions, initialContext);
-        };
-
         public async _execute(newState: State<any, EventObject>) {
             const { changed, value } = newState;
 
@@ -66,6 +61,10 @@ export const withStateMachine = <
                 this.setState({ currentState: newStateName });
             }
         }
+
+        public setMachineOptions = (configOptions: MachineOptions<TContext, TEvent>) => {
+            this.stateMachine = Machine(config, configOptions, initialContext);
+        };
 
         public handleDispatch = (action: TEvent) => {
             if (this.interpreter) {
