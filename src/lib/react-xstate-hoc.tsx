@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { State, Machine, EventObject, StateSchema, MachineConfig, StateValue, MachineOptions, DefaultContext } from 'xstate';
-import { interpret } from 'xstate/lib/interpreter';
+import { State, EventObject, StateSchema, MachineConfig, StateValue, MachineOptions, DefaultContext, StateMachine, Machine } from 'xstate';
+import { interpret, Interpreter } from 'xstate/lib/interpreter';
 import { StateMachineInjectedProps, StateMachineHOCState, Subtract, StateMachineStateName } from './types';
 
 export const withStateMachine = <
@@ -19,41 +19,20 @@ export const withStateMachine = <
 
     type WrapperProps = Subtract<TOriginalProps, StateMachineInjectedProps<TContext, TStateSchema, TEvent>>;
 
-    return class StateMachine extends React.Component<WrapperProps, StateMachineHOCState<TContext, TStateSchema>> {
+    return class StateMachineWrapper extends React.Component<WrapperProps, StateMachineHOCState<TContext, TStateSchema>> {
 
         // those should be private but TSC fails to export declarations
-        public stateMachine = Machine(config, {}, initialContext)
-        public interpreter = interpret(this.stateMachine);
+        public stateMachine: StateMachine<TContext, TStateSchema, TEvent> = Machine(config, options, initialContext);
+        public interpreter: Interpreter<TContext, TStateSchema, TEvent>;
         public currentStateName: StateValue;
 
-        // public componentDidMount() {
-        //     this.interpreter.start();
-        // }
-
         public componentWillUnmount() {
-            this.interpreter.stop();
+            if (this.interpreter) {
+                this.interpreter.stop();
+            }
         }
 
-        public readonly state: StateMachineHOCState<TContext, TStateSchema> = {
-            currentState: this.stateMachine.initialState.value as StateMachineStateName<TStateSchema>,
-            context: this.stateMachine.context as TContext
-        }
-
-        constructor(props: TOriginalProps) {
-            super(props);
-            // this.setMachineOptions(options);
-        }
-
-        public render(): JSX.Element {
-            return (
-                <Component {...this.props} {...this.state} dispatch={this.interpreter.send} injectConfig={this.setMachineOptions} />
-            );
-        }
-
-        public setMachineOptions = (configOptions: any) => { // MachineOptions<TContext, TEvent> broken type
-            this.interpreter.stop();
-
-            this.stateMachine = Machine(config, configOptions, initialContext);
+        public componentDidMount() {
             this.interpreter = interpret(this.stateMachine);
             this.interpreter.onTransition((current) => this._execute(current));
             this.interpreter.onChange((context) => {
@@ -61,6 +40,21 @@ export const withStateMachine = <
             });
 
             this.interpreter.start();
+        }
+
+        public readonly state: StateMachineHOCState<TContext, TStateSchema> = {
+            currentState: this.stateMachine.initialState.value as StateMachineStateName<TStateSchema>,
+            context: this.stateMachine.context as TContext
+        }
+
+        public render(): JSX.Element {
+            return (
+                <Component {...this.props} {...this.state} dispatch={this.handleDispatch} injectConfig={this.setMachineOptions} />
+            );
+        }
+
+        public setMachineOptions = (configOptions: any) => { // MachineOptions<TContext, TEvent> broken type
+            this.stateMachine = Machine(config, configOptions, initialContext);
         }
 
         public async _execute(newState: State<any, EventObject>) {
@@ -72,6 +66,12 @@ export const withStateMachine = <
                 this.setState({ currentState: newStateName });
             }
 
+        }
+
+        private handleDispatch = (action: TEvent) => {
+            if (this.interpreter) {
+                this.interpreter.send(action);
+            }
         }
     };
 };
