@@ -14,6 +14,8 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
 
     public componentDidMount() {
         const { injectMachineOptions } = this.props;
+
+        // Injecting options from component
         injectMachineOptions({
             services: {
                 [TestMachineService.FETCH_DATA]: (ctx: TestComponentState, e: TestMachineEventType) => this.onSend(e)
@@ -62,7 +64,7 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
     }
 
     private handleSubmit = () => {
-        this.props.dispatch({ type: TestMachineAction.SUBMIT, extra: 'ok' });
+        this.props.dispatch({ type: TestMachineAction.SUBMIT, extra: 'test extra' });
     }
 
     private handleReset = () => {
