@@ -13,8 +13,8 @@ interface TestComponentProps extends StateMachineInjectedProps<TestComponentStat
 export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
 
     public componentDidMount() {
-        const { injectConfig } = this.props;
-        injectConfig({
+        const { injectMachineOptions } = this.props;
+        injectMachineOptions({
             services: {
                 [TestMachineService.FETCH_DATA]: (ctx: TestComponentState, e: TestMachineEventType) => this.onSend(e)
             }

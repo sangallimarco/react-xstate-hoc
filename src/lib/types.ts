@@ -7,7 +7,7 @@ export interface StateMachineHOCState<TContext, TStateSchema extends StateSchema
 
 export interface StateMachineInjectedProps<TContext, TStateSchema extends StateSchema, MachineEvents extends OmniEvent<EventObject>> extends StateMachineHOCState<TContext, TStateSchema> {
     dispatch: (action: MachineEvents) => void;
-    injectConfig: (options: any) => void; // MachineOptions<TContext, any> broken
+    injectMachineOptions: (options: any) => void; // MachineOptions<TContext, any> broken
 }
 
 export interface StateMachineAction<T> extends EventObject {

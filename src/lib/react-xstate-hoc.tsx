@@ -49,7 +49,7 @@ export const withStateMachine = <
 
         public render(): JSX.Element {
             return (
-                <Component {...this.props} {...this.state} dispatch={this.handleDispatch} injectConfig={this.setMachineOptions} />
+                <Component {...this.props} {...this.state} dispatch={this.handleDispatch} injectMachineOptions={this.setMachineOptions} />
             );
         }
 
