@@ -53,7 +53,7 @@ export const withStateMachine = <
             );
         }
 
-        public setMachineOptions = (configOptions: any) => { // MachineOptions<TContext, TEvent> broken type
+        public setMachineOptions = (configOptions: MachineOptions<TContext, TEvent>) => {
             this.stateMachine = Machine(config, configOptions, initialContext);
         }
 
