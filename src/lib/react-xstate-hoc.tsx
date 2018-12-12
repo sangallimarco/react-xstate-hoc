@@ -68,7 +68,7 @@ export const withStateMachine = <
 
         }
 
-        private handleDispatch = (action: TEvent) => {
+        public handleDispatch = (action: TEvent) => {
             if (this.interpreter) {
                 this.interpreter.send(action);
             }
