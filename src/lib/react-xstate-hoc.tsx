@@ -26,30 +26,41 @@ export const withStateMachine = <
         public interpreter: Interpreter<TContext, TStateSchema, TEvent>;
         public currentStateName: StateValue;
 
-        public componentWillUnmount() {
-            if (this.interpreter) {
-                this.interpreter.stop();
-            }
-        }
-
-        public componentDidMount() {
-            this.interpreter = interpret(this.stateMachine);
-            this.interpreter.onTransition((current) => this._execute(current));
-            this.interpreter.onChange((context) => {
-                this.setState({ context })
-            });
-            this.interpreter.start();
-        }
-
         public readonly state: StateMachineHOCState<TContext, TStateSchema> = {
             currentState: this.stateMachine.initialState.value as StateMachineStateName<TStateSchema>,
             context: this.stateMachine.context as TContext
+        }
+
+        public componentDidMount() {
+            this.initInterpreter();
+        }
+
+        public componentWillUnmount() {
+            this.stopInterpreter();
         }
 
         public render(): JSX.Element {
             return (
                 <Component {...this.props} {...this.state} dispatch={this.handleDispatch} injectMachineOptions={this.setMachineOptions} />
             );
+        }
+
+        public initInterpreter() {
+            if (!this.interpreter) {
+                this.stopInterpreter();
+                this.interpreter = interpret(this.stateMachine);
+                this.interpreter.onTransition((current) => this._execute(current));
+                this.interpreter.onChange((context) => {
+                    this.setState({ context })
+                });
+                this.interpreter.start();
+            }
+        }
+
+        public stopInterpreter() {
+            if (this.interpreter) {
+                this.interpreter.stop();
+            }
         }
 
         public async _execute(newState: State<any, EventObject>) {
@@ -64,6 +75,7 @@ export const withStateMachine = <
 
         public setMachineOptions = (configOptions: MachineOptionsFix<TContext, TEvent>) => {
             this.stateMachine = this.stateMachine.withConfig(configOptions as MachineOptions<TContext, TEvent>); // FIXME casting type to original MachineOptions for now
+            this.initInterpreter();
         };
 
         public handleDispatch = (action: TEvent) => {
