@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { withStateMachine, StateMachineInjectedProps } from '../../lib';
-import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, TestMachineEvents, TestMachineStateSchema, TestMachineAction, TestMachineState, TestMachineEventType, TestMachineService } from '../configs/test-machine';
+import { STATE_CHART, INITIAL_STATE, TestMachineEvents, TestMachineStateSchema, TestMachineAction, TestMachineState, TestMachineEventType, TestMachineService } from '../configs/test-machine';
 import { TestChildComponent } from './test-child';
 import './test.css';
 import { TestComponentState } from '../configs/test-types';
 import { fetchData } from '../services/test-service';
 
 interface TestComponentProps extends StateMachineInjectedProps<TestComponentState, TestMachineStateSchema, TestMachineEvents> {
-    label?: string;
+    label: string;
 }
 
 export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
@@ -76,6 +76,6 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
 export const TestComponent = withStateMachine(
     TestBaseComponent,
     STATE_CHART,
-    MACHINE_OPTIONS,
+    {},
     INITIAL_STATE
 );

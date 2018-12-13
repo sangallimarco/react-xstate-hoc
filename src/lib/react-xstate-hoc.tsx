@@ -15,7 +15,7 @@ export const withStateMachine = <
         config: MachineConfig<TContext, TStateSchema, TEvent>,
         options: MachineOptions<TContext, TEvent>,
         initialContext: TContext
-    ) => {
+    ): React.ComponentClass<Subtract<TOriginalProps, StateMachineInjectedProps<TContext, TStateSchema, TEvent>>, StateMachineHOCState<TContext, TStateSchema>> => {
 
     type WrapperProps = Subtract<TOriginalProps, StateMachineInjectedProps<TContext, TStateSchema, TEvent>>;
 

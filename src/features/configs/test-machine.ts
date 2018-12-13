@@ -1,7 +1,7 @@
 import { assign, log } from 'xstate/lib/actions';
 import { TestComponentState } from './test-types';
 import { MachineConfig } from 'xstate';
-import { StateMachineAction } from '../../lib';
+import { StateMachineAction, MachineOptionsFix } from '../../lib';
 
 // https://statecharts.github.io/xstate-viz/
 
@@ -98,11 +98,8 @@ export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSche
     }
 };
 
-
-
-export const MACHINE_OPTIONS = {
+export const MACHINE_OPTIONS: MachineOptionsFix<TestComponentState, TestMachineEvents> = {
 }
-
 
 export const INITIAL_STATE: TestComponentState = {
     items: [],
