@@ -12,8 +12,9 @@ interface TestComponentProps extends StateMachineInjectedProps<TestComponentStat
 
 export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
 
-    public componentDidMount() {
-        const { injectMachineOptions } = this.props;
+    constructor(props: TestComponentProps) {
+        super(props);
+        const { injectMachineOptions } = props;
 
         // Injecting options from component
         injectMachineOptions({
