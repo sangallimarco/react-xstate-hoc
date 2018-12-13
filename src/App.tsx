@@ -7,7 +7,7 @@ class App extends React.Component {
   public render() {
     return (
       <div className="App">
-        <TestComponent />
+        <TestComponent label="LABEL_PROP" />
       </div>
     );
   }

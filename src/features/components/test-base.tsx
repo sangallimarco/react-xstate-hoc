@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { withStateMachine, StateMachineInjectedProps } from '../../lib';
-import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, TestMachineEvents, TestMachineStateSchema, TestMachineAction, TestMachineState } from '../configs/test-machine';
+import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, TestMachineEvents, TestMachineStateSchema, TestMachineAction, TestMachineState, TestMachineEventType, TestMachineService } from '../configs/test-machine';
 import { TestChildComponent } from './test-child';
 import './test.css';
 import { TestComponentState } from '../configs/test-types';
+import { fetchData } from '../services/test-service';
 
 interface TestComponentProps extends StateMachineInjectedProps<TestComponentState, TestMachineStateSchema, TestMachineEvents> {
     label?: string;
@@ -11,12 +12,28 @@ interface TestComponentProps extends StateMachineInjectedProps<TestComponentStat
 
 export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
 
+    constructor(props: TestComponentProps) {
+        super(props);
+        const { injectMachineOptions } = props;
+
+        // Injecting options from component
+        injectMachineOptions({
+            services: {
+                [TestMachineService.FETCH_DATA]: (ctx: TestComponentState, e: TestMachineEventType) => this.onSend(e)
+            }
+        });
+    }
+
+    public onSend(e: TestMachineEventType): Promise<Partial<TestComponentState>> {
+        return fetchData(e);
+    }
+
     public render() {
-        const { currentState, context } = this.props;
+        const { currentState, context, label } = this.props;
         const { cnt } = context;
 
         return (<div className="test">
-            <h1>{currentState} {cnt}</h1>
+            <h1>{currentState} {cnt} {label}</h1>
             <div>
                 {this.renderChild(currentState, context)}
             </div>
@@ -48,7 +65,7 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
     }
 
     private handleSubmit = () => {
-        this.props.dispatch({ type: TestMachineAction.SUBMIT, extra: 'ok' });
+        this.props.dispatch({ type: TestMachineAction.SUBMIT, extra: 'test extra' });
     }
 
     private handleReset = () => {

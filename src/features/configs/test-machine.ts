@@ -1,5 +1,4 @@
 import { assign, log } from 'xstate/lib/actions';
-import { fetchData } from '../services/test-service';
 import { TestComponentState } from './test-types';
 import { MachineConfig } from 'xstate';
 import { StateMachineAction } from '../../lib';
@@ -39,7 +38,11 @@ export type TestMachineEvents =
     | { type: TestMachineAction.SELECT }
     | { type: TestMachineAction.EXIT };
 
-type EventType = StateMachineAction<TestComponentState>;
+export type TestMachineEventType = StateMachineAction<TestComponentState>;
+
+export enum TestMachineService {
+    FETCH_DATA = 'FETCH_DATA'
+}
 
 export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSchema, TestMachineEvents> = {
     id: 'test',
@@ -58,18 +61,18 @@ export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSche
         },
         [TestMachineState.PROCESSING]: {
             invoke: {
-                src: (ctx: TestComponentState, e: EventType) => fetchData(e),
+                src: TestMachineService.FETCH_DATA,
                 onDone: {
                     target: TestMachineState.LIST,
                     actions: assign({
-                        items: (ctx: TestComponentState, e: EventType) => {
+                        items: (ctx: TestComponentState, e: TestMachineEventType) => {
                             return e.data.items;
                         }
                     })
                 },
                 onError: {
                     target: TestMachineState.ERROR,
-                    actions: log((ctx: TestComponentState, e: EventType) => e.data)
+                    actions: log((ctx: TestComponentState, e: TestMachineEventType) => e.data)
                 }
             }
         },
