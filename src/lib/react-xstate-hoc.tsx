@@ -47,7 +47,6 @@ export const withStateMachine = <
 
         public initInterpreter() {
             if (!this.interpreter) {
-                this.stopInterpreter();
                 this.interpreter = interpret(this.stateMachine);
                 this.interpreter.onTransition((current) => this._execute(current));
                 this.interpreter.onChange((context) => {
