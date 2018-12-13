@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { State, EventObject, StateSchema, MachineConfig, StateValue, MachineOptions, DefaultContext, StateMachine, Machine } from 'xstate';
 import { interpret, Interpreter } from 'xstate/lib/interpreter';
-import { StateMachineInjectedProps, StateMachineHOCState, Subtract, StateMachineStateName } from './types';
+import { StateMachineInjectedProps, StateMachineHOCState, Subtract, StateMachineStateName, MachineOptionsFix } from './types';
 
 export const withStateMachine = <
     TOriginalProps,
@@ -62,8 +62,8 @@ export const withStateMachine = <
             }
         }
 
-        public setMachineOptions = (configOptions: MachineOptions<TContext, TEvent>) => {
-            this.stateMachine = Machine(config, configOptions, initialContext);
+        public setMachineOptions = (configOptions: MachineOptionsFix<TContext, TEvent>) => {
+            this.stateMachine = this.stateMachine.withConfig(configOptions as MachineOptions<TContext, TEvent>); // FIXME casting type to original MachineOptions for now
         };
 
         public handleDispatch = (action: TEvent) => {

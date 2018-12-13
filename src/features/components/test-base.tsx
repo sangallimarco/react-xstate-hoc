@@ -23,7 +23,7 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
         });
     }
 
-    public onSend(e: TestMachineEventType) {
+    public onSend(e: TestMachineEventType): Promise<Partial<TestComponentState>> {
         return fetchData(e);
     }
 
