@@ -31,15 +31,12 @@ export const withStateMachine = <
             context: this.stateMachine.context as TContext
         }
 
-        public componentDidMount() {
-            this.initInterpreter();
-        }
-
         public componentWillUnmount() {
             this.stopInterpreter();
         }
 
         public render(): JSX.Element {
+            this.initInterpreter();
             return (
                 <Component {...this.props} {...this.state} dispatch={this.handleDispatch} injectMachineOptions={this.setMachineOptions} />
             );
