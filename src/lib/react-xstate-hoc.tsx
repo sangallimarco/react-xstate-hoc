@@ -13,7 +13,6 @@ export const withStateMachine = <
             React.ComponentClass<TOriginalProps & StateMachineInjectedProps<TContext, TStateSchema, TEvent>> |
             React.StatelessComponent<TOriginalProps & StateMachineInjectedProps<TContext, TStateSchema, TEvent>>),
         config: MachineConfig<TContext, TStateSchema, TEvent>,
-        options: MachineOptions<TContext, TEvent>,
         initialContext: TContext
     ): React.ComponentClass<Subtract<TOriginalProps, StateMachineInjectedProps<TContext, TStateSchema, TEvent>>, StateMachineHOCState<TContext, TStateSchema>> => {
 
@@ -22,7 +21,7 @@ export const withStateMachine = <
     return class StateMachineWrapper extends React.Component<WrapperProps, StateMachineHOCState<TContext, TStateSchema>> {
 
         // those should be private but TSC fails to export declarations
-        public stateMachine: StateMachine<TContext, TStateSchema, TEvent> = Machine(config, options, initialContext);
+        public stateMachine: StateMachine<TContext, TStateSchema, TEvent> = Machine(config, {}, initialContext);
         public interpreter: Interpreter<TContext, TStateSchema, TEvent>;
         public currentStateName: StateValue;
 

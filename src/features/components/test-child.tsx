@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withStateMachine, StateMachineInjectedProps } from '../../lib';
-import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, TestChildMachineEvents, TestChildMachineStateSchema, TestChildActions, TestChildStates } from '../configs/test-child-machine';
+import { STATE_CHART, INITIAL_STATE, TestChildMachineEvents, TestChildMachineStateSchema, TestChildActions, TestChildStates } from '../configs/test-child-machine';
 
 interface TestChildComponentProps extends StateMachineInjectedProps<{}, TestChildMachineStateSchema, TestChildMachineEvents> {
     onExit: () => void;
@@ -39,6 +39,5 @@ export class TestChildBaseComponent extends React.PureComponent<TestChildCompone
 export const TestChildComponent = withStateMachine(
     TestChildBaseComponent,
     STATE_CHART,
-    MACHINE_OPTIONS,
     INITIAL_STATE
 );
