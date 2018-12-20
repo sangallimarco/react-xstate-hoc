@@ -25,7 +25,7 @@ const machineMock: MachineConfig<{}, HostedMachineStateSchema, EventObject> = {
         A: {},
         B: {}
     }
-});
+};
 
 interface HostedComponentSchema {
     states: {
