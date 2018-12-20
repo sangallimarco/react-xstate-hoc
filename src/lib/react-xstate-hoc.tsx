@@ -30,12 +30,15 @@ export const withStateMachine = <
             context: this.stateMachine.context as TContext
         }
 
+        public componentDidMount() {
+            this.initInterpreter();
+        }
+
         public componentWillUnmount() {
             this.stopInterpreter();
         }
 
         public render(): JSX.Element {
-            this.initInterpreter();
             return (
                 <Component {...this.props} {...this.state} dispatch={this.handleDispatch} injectMachineOptions={this.setMachineOptions} />
             );
@@ -69,8 +72,10 @@ export const withStateMachine = <
         }
 
         public setMachineOptions = (configOptions: MachineOptionsFix<TContext, TEvent>) => {
-            this.stateMachine = this.stateMachine.withConfig(configOptions as MachineOptions<TContext, TEvent>); // FIXME casting type to original MachineOptions for now
-            this.initInterpreter();
+            if (!this.interpreter) {
+                this.stateMachine = this.stateMachine.withConfig(configOptions as MachineOptions<TContext, TEvent>); // FIXME casting type to original MachineOptions for now
+                this.initInterpreter();
+            }
         };
 
         public handleDispatch = (action: TEvent) => {
