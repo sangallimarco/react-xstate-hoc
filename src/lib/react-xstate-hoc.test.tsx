@@ -7,7 +7,7 @@ import { MachineConfig, EventObject } from 'xstate';
 jest.mock('xstate', () => ({
     Machine: () => ({
         initialState: {
-            value: 'a'
+            value: 'A'
         },
         withConfig: jest.fn()
     })
