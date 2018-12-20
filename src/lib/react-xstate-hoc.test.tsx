@@ -89,21 +89,22 @@ describe('ReactXstateHoc', () => {
         expect(mockStart).toHaveBeenCalledTimes(1);
     });
 
-    it('Should not initilise interpreter on mount', () => {
+    it('Should initilise interpreter on mount when injectMachineOptions is not called by hosted component', () => {
         const component = React.createElement(withStateMachine(HostedComponent, machineMock, {}));
         const instance = mount(component).instance() as any; // should be a type here
         const initInterpreter = jest.spyOn(instance, 'initInterpreter');
         instance.componentDidMount();
         expect(mockWithConfig).not.toHaveBeenCalled();
-        expect(initInterpreter).toHaveBeenCalled();
+        expect(initInterpreter).toHaveBeenCalledTimes(1);
         expect(mockStart).toHaveBeenCalledTimes(1);
     });
 
-    it('Should initilise interpreter when option passed', () => {
+    it('Should initilise interpreter when injectMachineOptions is called by hosted component', () => {
         const component = React.createElement(withStateMachine(HostedComponentInjector, machineMock, {}));
         mount(component);
         expect(mockWithConfig).toHaveBeenCalledWith({ actions: {} });
         expect(mockWithConfig).toHaveBeenCalledTimes(1);
+        expect(mockStart).toHaveBeenCalledTimes(1);
     });
 
     it('Should stop interpreter on unmount', () => {
