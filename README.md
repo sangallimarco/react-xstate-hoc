@@ -16,7 +16,6 @@ Define your State Machine
 
 import { StateMachineAction } from 'react-xstate-hoc';
 import { assign } from 'xstate/lib/actions';
-import { fetchData } from '../services/test-service'; // described here below
 import { MachineConfig } from 'xstate';
 
 export interface TestComponentState {
@@ -59,7 +58,7 @@ export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSche
         },
         PROCESSING: {
             invoke: {
-                src: (ctx: TestComponentState, e: StateMachineAction<TestComponentState>) => fetchData(e),
+                src: 'FETCH_DATA',
                 onDone: {
                     target: 'LIST',
                     actions: assign({
@@ -92,10 +91,6 @@ export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSche
         }
     }
 };
-
-export const MACHINE_OPTIONS = {
-}
-
 
 export const INITIAL_STATE: TestComponentState = {
     items: []
@@ -151,7 +146,8 @@ Let's now link the component to the state machine using `withStateMachine`.
 
 import * as React from 'react';
 import { withStateMachine, StateMachineInjectedProps, StateMachineStateName } from 'react-xstate-hoc';
-import { STATE_CHART, MACHINE_OPTIONS, INITIAL_STATE, TestMachineEvents, TestMachineStateSchema, TestComponentState } from '../configs/test-machine';
+import { STATE_CHART, INITIAL_STATE, TestMachineEvents, TestMachineStateSchema, TestComponentState } from '../configs/test-machine';
+import { fetchData } from '../services/test-service'; // described here below
 import './test.css';
 
 interface TestComponentProps extends StateMachineInjectedProps<TestComponentState, TestMachineStateSchema, TestMachineEvents> {
@@ -159,6 +155,18 @@ interface TestComponentProps extends StateMachineInjectedProps<TestComponentStat
 }
 
 export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
+
+     constructor(props: TestComponentProps) {
+        super(props);
+        const { injectMachineOptions } = props;
+
+        // Injecting options from component
+        injectMachineOptions({
+            services: {
+                FETCH_DATA: (ctx: TestComponentState, e: TestMachineEventType) => fetchData(e) //here you can link a component internal method or provide a service from props
+            }
+        });
+    }
 
     public render() {
         const { currentState, context } = this.props;
@@ -206,7 +214,6 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
 export const TestComponent = withStateMachine(
     TestBaseComponent,
     STATE_CHART,
-    MACHINE_OPTIONS,
     INITIAL_STATE
 );
 
