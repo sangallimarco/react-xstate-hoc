@@ -21,7 +21,7 @@ jest.mock('xstate/lib/interpreter', () => ({
         start: mockStart,
         stop: mockStop,
         onTransition: jest.fn(),
-        onChange: jest.fn(),
+        onChange: jest.fn()
     })
 }));
 
@@ -48,14 +48,15 @@ interface HostedComponentSchema {
 }
 
 type HostedComponentEvents =
-    | { type: 'DEFAULT' };
+    | { type: 'DEFAULT' }
+    | { type: 'NULL' };
 
 
 interface HostedComponentProps extends StateMachineInjectedProps<{}, HostedComponentSchema, HostedComponentEvents> {
 }
 
 class HostedComponent extends React.Component<HostedComponentProps> {
-    render() {
+    public render() {
         return <div />;
     }
 }
@@ -67,7 +68,7 @@ class HostedComponentInjector extends React.Component<HostedComponentProps> {
         injectMachineOptions({ actions: {} });
     }
 
-    render() {
+    public render() {
         return <div />;
     }
 }
