@@ -219,9 +219,9 @@ export const TestComponent = withStateMachine(
 
 ```
 
-## Using enums
+### Using enums
 
-You can also use enums for states, actions, 
+You can also use enums for states, actions, schema ...
 
 ```typescript
 import { assign, log } from 'xstate/lib/actions';
