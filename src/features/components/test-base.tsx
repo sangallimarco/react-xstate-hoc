@@ -76,6 +76,5 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
 export const TestComponent = withStateMachine(
     TestBaseComponent,
     STATE_CHART,
-    {},
     INITIAL_STATE
 );

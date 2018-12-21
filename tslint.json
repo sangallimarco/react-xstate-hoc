@@ -25,6 +25,7 @@
     "member-ordering": false,
     "object-literal-sort-keys": false,
     "no-submodule-imports": false,
+    "max-classes-per-file": [true, 2],
     "trailing-comma": [
       true,
       {
