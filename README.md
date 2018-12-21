@@ -219,6 +219,35 @@ export const TestComponent = withStateMachine(
 
 ```
 
+### Provide options to machine
+
+See https://xstate.js.org/docs/guides/machines.html#options
+
+
+You can link the machine definition action or service label to your component using  `injectMachineOptions`.
+The function is available in your component props:
+
+```typescript
+// TestBaseComponent class constructor
+
+...
+constructor(props: TestComponentProps) {
+        super(props);
+        const { injectMachineOptions } = props;
+
+        // Injecting options from component
+        injectMachineOptions({
+            services: {
+                FETCH_DATA: (ctx: TestComponentState, e: TestMachineEventType) => fetchData(e) //here you can link a component internal method or provide a service from props
+            },
+            actions: {
+                ... // your code here
+            }
+        });
+    }
+...
+```
+
 ### Using enums
 
 You can also use enums for states, actions, schema ...
