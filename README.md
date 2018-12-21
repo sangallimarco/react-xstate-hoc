@@ -218,3 +218,116 @@ export const TestComponent = withStateMachine(
 );
 
 ```
+
+## Using enums
+
+You can also use enums for states, actions, 
+
+```typescript
+import { assign, log } from 'xstate/lib/actions';
+import { MachineConfig } from 'xstate';
+import { StateMachineAction, MachineOptionsFix } from 'react-xstate-hoc';
+
+export interface TestComponentState {
+    items: string[];
+    cnt: number;
+}
+
+export enum TestMachineState {
+    START = 'START',
+    PROCESSING = 'PROCESSING',
+    LIST = 'LIST',
+    ERROR = 'ERROR',
+    SHOW_ITEM = 'SHOW_ITEM'
+}
+
+export enum TestMachineAction {
+    SUBMIT = 'SUBMIT',
+    CANCEL = 'CANCEL',
+    RESET = 'RESET',
+    SELECT = 'SELECT',
+    EXIT = 'EXIT'
+}
+
+export interface TestMachineStateSchema {
+    states: {
+        [TestMachineState.START]: {};
+        [TestMachineState.PROCESSING]: {};
+        [TestMachineState.LIST]: {};
+        [TestMachineState.ERROR]: {};
+        [TestMachineState.SHOW_ITEM]: {};
+    }
+}
+
+export type TestMachineEvents =
+    | { type: TestMachineAction.SUBMIT, extra: string }
+    | { type: TestMachineAction.CANCEL }
+    | { type: TestMachineAction.RESET }
+    | { type: TestMachineAction.SELECT }
+    | { type: TestMachineAction.EXIT };
+
+export type TestMachineEventType = StateMachineAction<TestComponentState>;
+
+export enum TestMachineService {
+    FETCH_DATA = 'FETCH_DATA'
+}
+
+export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSchema, TestMachineEvents> = {
+    id: 'test',
+    initial: TestMachineState.START,
+    states: {
+        [TestMachineState.START]: {
+            on: {
+                [TestMachineAction.SUBMIT]: {
+                    target: TestMachineState.PROCESSING,
+                    cond: (ctx: TestComponentState) => ctx.cnt < 10 // run N times
+                }
+            },
+            onEntry: assign({
+                items: []
+            })
+        },
+        [TestMachineState.PROCESSING]: {
+            invoke: {
+                src: TestMachineService.FETCH_DATA, // see injectMachineOptions here above
+                onDone: {
+                    target: TestMachineState.LIST,
+                    actions: assign({
+                        items: (ctx: TestComponentState, e: TestMachineEventType) => {
+                            return e.data.items;
+                        }
+                    })
+                },
+                onError: {
+                    target: TestMachineState.ERROR,
+                    actions: log((ctx: TestComponentState, e: TestMachineEventType) => e.data)
+                }
+            }
+        },
+        [TestMachineState.LIST]: {
+            on: {
+                [TestMachineAction.RESET]: TestMachineState.START,
+                [TestMachineAction.SELECT]: TestMachineState.SHOW_ITEM
+            },
+            onEntry: assign({
+                cnt: (ctx: TestComponentState) => ctx.cnt + 1
+            })
+        },
+        [TestMachineState.SHOW_ITEM]: {
+            on: {
+                [TestMachineAction.EXIT]: TestMachineState.LIST
+            }
+        },
+        [TestMachineState.ERROR]: {
+            on: {
+                [TestMachineAction.RESET]: TestMachineState.START
+            }
+        }
+    }
+};
+
+export const INITIAL_STATE: TestComponentState = {
+    items: [],
+    cnt: 0
+};
+```
