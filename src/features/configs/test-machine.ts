@@ -73,6 +73,10 @@ export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSche
                         })),
                         log((ctx, e: TestMachineEventType) => e.data)
                     ]
+                },
+                onError: {
+                    target: TestMachineState.ERROR,
+                    actions: log((ctx, e) => e.data)
                 }
             }
         },
