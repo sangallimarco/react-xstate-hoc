@@ -1,9 +1,7 @@
 import { assign, log } from 'xstate/lib/actions';
 import { TestComponentState } from './test-types';
 import { MachineConfig } from 'xstate';
-import { StateMachineAction, MachineOptionsFix } from '../../lib';
-
-// https://statecharts.github.io/xstate-viz/
+import { StateMachineAction } from '../../lib';
 
 export enum TestMachineState {
     START = 'START',
@@ -18,7 +16,8 @@ export enum TestMachineAction {
     CANCEL = 'CANCEL',
     RESET = 'RESET',
     SELECT = 'SELECT',
-    EXIT = 'EXIT'
+    EXIT = 'EXIT',
+    FETCH_DATA = 'FETCH_DATA'
 }
 
 export interface TestMachineStateSchema {
@@ -31,12 +30,13 @@ export interface TestMachineStateSchema {
     }
 }
 
-export type TestMachineEvents =
+export type TestMachineEvent =
     | { type: TestMachineAction.SUBMIT, extra: string }
     | { type: TestMachineAction.CANCEL }
     | { type: TestMachineAction.RESET }
     | { type: TestMachineAction.SELECT }
-    | { type: TestMachineAction.EXIT };
+    | { type: TestMachineAction.EXIT }
+    ;
 
 export type TestMachineEventType = StateMachineAction<TestComponentState>;
 
@@ -44,7 +44,7 @@ export enum TestMachineService {
     FETCH_DATA = 'FETCH_DATA'
 }
 
-export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSchema, TestMachineEvents> = {
+export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSchema, TestMachineEvent> = {
     id: 'test',
     initial: TestMachineState.START,
     states: {
@@ -52,7 +52,10 @@ export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSche
             on: {
                 [TestMachineAction.SUBMIT]: {
                     target: TestMachineState.PROCESSING,
-                    cond: (ctx: TestComponentState) => ctx.cnt < 10 // run N times
+                    actions: assign((ctx, e) => ({
+                        extra: e.extra
+                    })),
+                    cond: (ctx) => ctx.cnt < 10 // run N times
                 }
             },
             onEntry: assign({
@@ -64,26 +67,28 @@ export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSche
                 src: TestMachineService.FETCH_DATA,
                 onDone: {
                     target: TestMachineState.LIST,
-                    actions: assign({
-                        items: (ctx: TestComponentState, e: TestMachineEventType) => {
-                            return e.data.items;
-                        }
-                    })
-                },
-                onError: {
-                    target: TestMachineState.ERROR,
-                    actions: log((ctx: TestComponentState, e: TestMachineEventType) => e.data)
+                    actions: [
+                        assign((ctx, e: TestMachineEventType) => ({
+                            items: e.data.items
+                        })),
+                        log((ctx, e: TestMachineEventType) => e.data)
+                    ]
                 }
             }
         },
         [TestMachineState.LIST]: {
             on: {
-                [TestMachineAction.RESET]: TestMachineState.START,
+                [TestMachineAction.RESET]: {
+                    target: TestMachineState.START,
+                    actions: assign((ctx, e) => ({
+                        cnt: ctx.cnt + 1
+                    }))
+                },
                 [TestMachineAction.SELECT]: TestMachineState.SHOW_ITEM
             },
-            onEntry: assign({
-                cnt: (ctx: TestComponentState) => ctx.cnt + 1
-            })
+            onEntry: assign((ctx) => ({
+                cnt: ctx.cnt + 1
+            }))
         },
         [TestMachineState.SHOW_ITEM]: {
             on: {
@@ -98,10 +103,8 @@ export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSche
     }
 };
 
-export const MACHINE_OPTIONS: MachineOptionsFix<TestComponentState, TestMachineEvents> = {
-}
-
 export const INITIAL_STATE: TestComponentState = {
     items: [],
-    cnt: 0
+    cnt: 0,
+    extra: ''
 };
