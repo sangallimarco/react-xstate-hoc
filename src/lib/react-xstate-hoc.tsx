@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { State, EventObject, StateSchema, MachineConfig, StateValue, MachineOptions, DefaultContext, StateMachine, Machine } from 'xstate';
-import { interpret, Interpreter } from 'xstate/lib/interpreter';
+import { State, EventObject, StateSchema, MachineConfig, StateValue, MachineOptions, DefaultContext, Machine } from 'xstate-ext';
+import { interpret, Interpreter } from 'xstate-ext/lib/interpreter';
 import { StateMachineInjectedProps, StateMachineHOCState, Subtract, StateMachineStateName, MachineOptionsFix } from './types';
 
 export const withStateMachine = <
@@ -8,20 +8,20 @@ export const withStateMachine = <
     TStateSchema extends StateSchema,
     TContext = DefaultContext,
     TEvent extends EventObject = EventObject
-    >(
-        Component: (
-            React.ComponentClass<TOriginalProps & StateMachineInjectedProps<TContext, TStateSchema, TEvent>> |
-            React.StatelessComponent<TOriginalProps & StateMachineInjectedProps<TContext, TStateSchema, TEvent>>),
-        config: MachineConfig<TContext, TStateSchema, TEvent>,
-        initialContext: TContext
-    ): React.ComponentClass<Subtract<TOriginalProps, StateMachineInjectedProps<TContext, TStateSchema, TEvent>>, StateMachineHOCState<TContext, TStateSchema>> => {
+>(
+    Component: (
+        React.ComponentClass<TOriginalProps & StateMachineInjectedProps<TContext, TStateSchema, TEvent>> |
+        React.StatelessComponent<TOriginalProps & StateMachineInjectedProps<TContext, TStateSchema, TEvent>>),
+    config: MachineConfig<TContext, TStateSchema, TEvent>,
+    initialContext: TContext
+): React.ComponentClass<Subtract<TOriginalProps, StateMachineInjectedProps<TContext, TStateSchema, TEvent>>, StateMachineHOCState<TContext, TStateSchema>> => {
 
     type WrapperProps = Subtract<TOriginalProps, StateMachineInjectedProps<TContext, TStateSchema, TEvent>>;
 
     return class StateMachineWrapper extends React.Component<WrapperProps, StateMachineHOCState<TContext, TStateSchema>> {
 
         // those should be private but TSC fails to export declarations
-        public stateMachine: StateMachine<TContext, TStateSchema, TEvent> = Machine(config, {}, initialContext);
+        public stateMachine = Machine(config, {}, initialContext);
         public interpreter: Interpreter<TContext, TStateSchema, TEvent>;
         public currentStateName: StateValue;
 

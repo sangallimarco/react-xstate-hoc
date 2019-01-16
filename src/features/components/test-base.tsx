@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { withStateMachine, StateMachineInjectedProps } from '../../lib';
-import { STATE_CHART, INITIAL_STATE, TestMachineEvents, TestMachineStateSchema, TestMachineAction, TestMachineState, TestMachineEventType, TestMachineService } from '../configs/test-machine';
+import { STATE_CHART, INITIAL_STATE, TestMachineEvent, TestMachineStateSchema, TestMachineAction, TestMachineState, TestMachineService } from '../configs/test-machine';
 import { TestChildComponent } from './test-child';
 import './test.css';
 import { TestComponentState } from '../configs/test-types';
 import { fetchData } from '../services/test-service';
 
-interface TestComponentProps extends StateMachineInjectedProps<TestComponentState, TestMachineStateSchema, TestMachineEvents> {
+interface TestComponentProps extends StateMachineInjectedProps<TestComponentState, TestMachineStateSchema, TestMachineEvent> {
     label: string;
 }
 
@@ -19,13 +19,9 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
         // Injecting options from component
         injectMachineOptions({
             services: {
-                [TestMachineService.FETCH_DATA]: (ctx: TestComponentState, e: TestMachineEventType) => this.onSend(e)
+                [TestMachineService.FETCH_DATA]: (ctx) => fetchData(ctx.extra)
             }
         });
-    }
-
-    public onSend(e: TestMachineEventType): Promise<Partial<TestComponentState>> {
-        return fetchData(e);
     }
 
     public render() {

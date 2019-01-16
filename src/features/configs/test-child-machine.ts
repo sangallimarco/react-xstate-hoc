@@ -1,4 +1,4 @@
-import { MachineConfig } from 'xstate';
+import { MachineConfig } from 'xstate-ext';
 
 export enum TestChildStates {
     START = 'START',
@@ -39,9 +39,6 @@ export const STATE_CHART: MachineConfig<{}, TestChildMachineStateSchema, TestChi
 export interface TestChildComponentState {
     enabled: boolean;
 }
-
-export const MACHINE_OPTIONS = {
-};
 
 export const INITIAL_STATE: TestChildComponentState = {
     enabled: true

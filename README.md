@@ -16,7 +16,7 @@ Define your State Machine
 
 import { StateMachineAction } from 'react-xstate-hoc';
 import { assign } from 'xstate/lib/actions';
-import { MachineConfig } from 'xstate';
+import { MachineConfig } from 'xstate-ext';
 
 export interface TestComponentState {
     items: string[];
@@ -254,7 +254,7 @@ You can also use enums for states, actions, schema ...
 
 ```typescript
 import { assign, log } from 'xstate/lib/actions';
-import { MachineConfig } from 'xstate';
+import { MachineConfig } from 'xstate-ext';
 import { StateMachineAction, MachineOptionsFix } from 'react-xstate-hoc';
 
 export interface TestComponentState {
