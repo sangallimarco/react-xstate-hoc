@@ -1,6 +1,6 @@
-import { assign, log } from 'xstate/lib/actions';
+import { assign, log } from 'xstate-ext/lib/actions';
 import { TestComponentState } from './test-types';
-import { MachineConfig } from 'xstate';
+import { MachineConfig } from 'xstate-ext';
 import { StateMachineAction } from '../../lib';
 
 export enum TestMachineState {

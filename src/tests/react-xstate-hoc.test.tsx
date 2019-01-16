@@ -2,10 +2,10 @@ import * as React from 'react'
 import { withStateMachine } from '../lib/react-xstate-hoc';
 import { StateMachineInjectedProps } from '../lib/types';
 import { shallow, mount } from 'enzyme';
-import { MachineConfig, EventObject } from 'xstate';
+import { MachineConfig, EventObject } from 'xstate-ext';
 
 let mockWithConfig = jest.fn();
-jest.mock('xstate', () => ({
+jest.mock('xstate-ext', () => ({
     Machine: () => ({
         initialState: {
             value: 'A'

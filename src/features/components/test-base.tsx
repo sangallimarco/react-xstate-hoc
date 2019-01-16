@@ -5,7 +5,6 @@ import { TestChildComponent } from './test-child';
 import './test.css';
 import { TestComponentState } from '../configs/test-types';
 import { fetchData } from '../services/test-service';
-// import { EventObject } from 'xstate';
 
 interface TestComponentProps extends StateMachineInjectedProps<TestComponentState, TestMachineStateSchema, TestMachineEvent> {
     label: string;

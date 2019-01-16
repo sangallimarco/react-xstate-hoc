@@ -1,4 +1,4 @@
-import { EventObject, StateSchema, ConditionPredicate, ActionFunctionMap, ActivityConfig } from 'xstate';
+import { EventObject, StateSchema, ConditionPredicate, ActionFunctionMap, ActivityConfig } from 'xstate-ext';
 
 export interface StateMachineHOCState<TContext, TStateSchema extends StateSchema> {
     currentState: StateMachineStateName<TStateSchema>;
