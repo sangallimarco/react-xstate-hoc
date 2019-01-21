@@ -6,6 +6,9 @@ Please find the example here: https://github.com/sangallimarco/react-xstate-hoc/
 
 Example includes a better usage of Types for Actions and States.
 
+### Install
+
+```npm i react-xstate-hoc```
 
 ### HOW TO
 
