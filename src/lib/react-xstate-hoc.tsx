@@ -29,7 +29,7 @@ export const withStateMachine = <
         public readonly state: StateMachineHOCState<TContext, TStateSchema> = {
             currentState: this.stateMachine.initialState.value as StateMachineStateName<TStateSchema>,
             context: this.stateMachine.context as TContext,
-            stateHash: v4()
+            stateHash: undefined
         }
 
         public componentDidMount() {
@@ -49,9 +49,11 @@ export const withStateMachine = <
         public initInterpreter() {
             if (!this.interpreter) {
                 this.interpreter = interpret(this.stateMachine);
-                this.interpreter.onTransition((current) => this._execute(current));
+                this.interpreter.onTransition((current) => {
+                    this._execute(current);
+                });
                 this.interpreter.onChange((context) => {
-                    this.setState({ context, stateHash: v4() })
+                    this.setState({ context, stateHash: v4() });
                 });
                 this.interpreter.start();
             }
