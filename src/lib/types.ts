@@ -2,7 +2,8 @@ import { EventObject, StateSchema, ConditionPredicate, ActionFunctionMap, Activi
 
 export interface StateMachineHOCState<TContext, TStateSchema extends StateSchema> {
     currentState: StateMachineStateName<TStateSchema>;
-    context: TContext
+    context: TContext,
+    stateHash: string;
 }
 
 export interface MachineOptionsFix<TContext, TEvent extends EventObject> { // FIXME interface looks broken, please remove when fixed

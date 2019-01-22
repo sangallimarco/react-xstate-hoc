@@ -2,6 +2,7 @@ import * as React from 'react';
 import { State, EventObject, StateSchema, MachineConfig, StateValue, MachineOptions, DefaultContext, Machine } from 'xstate-ext';
 import { interpret, Interpreter } from 'xstate-ext/lib/interpreter';
 import { StateMachineInjectedProps, StateMachineHOCState, Subtract, StateMachineStateName, MachineOptionsFix } from './types';
+import { v4 } from 'uuid';
 
 export const withStateMachine = <
     TOriginalProps,
@@ -27,7 +28,8 @@ export const withStateMachine = <
 
         public readonly state: StateMachineHOCState<TContext, TStateSchema> = {
             currentState: this.stateMachine.initialState.value as StateMachineStateName<TStateSchema>,
-            context: this.stateMachine.context as TContext
+            context: this.stateMachine.context as TContext,
+            stateHash: v4()
         }
 
         public componentDidMount() {
@@ -49,7 +51,7 @@ export const withStateMachine = <
                 this.interpreter = interpret(this.stateMachine);
                 this.interpreter.onTransition((current) => this._execute(current));
                 this.interpreter.onChange((context) => {
-                    this.setState({ context })
+                    this.setState({ context, stateHash: v4() })
                 });
                 this.interpreter.start();
             }
@@ -67,7 +69,7 @@ export const withStateMachine = <
             if (changed && value !== this.currentStateName) {
                 this.currentStateName = value;
                 const newStateName = value as StateMachineStateName<TStateSchema>;
-                this.setState({ currentState: newStateName });
+                this.setState({ currentState: newStateName, stateHash: v4() });
             }
         }
 
