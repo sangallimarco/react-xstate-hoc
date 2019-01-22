@@ -51,7 +51,7 @@ export const withStateMachine = <
                 this.interpreter = interpret(this.stateMachine);
                 this.interpreter.start();
                 this.interpreter.onTransition((current) => {
-                    this._execute(current);
+                    this.handleTransition(current);
                 });
                 this.interpreter.onChange((context) => {
                     this.setState({ context, stateHash: v4() });
@@ -65,7 +65,7 @@ export const withStateMachine = <
             }
         }
 
-        public async _execute(newState: State<any, EventObject>) {
+        public handleTransition(newState: State<TContext, EventObject>) {
             const { changed, value } = newState;
 
             if (changed && value !== this.currentStateName) {
