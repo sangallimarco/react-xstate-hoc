@@ -49,13 +49,13 @@ export const withStateMachine = <
         public initInterpreter() {
             if (!this.interpreter) {
                 this.interpreter = interpret(this.stateMachine);
+                this.interpreter.start();
                 this.interpreter.onTransition((current) => {
                     this._execute(current);
                 });
                 this.interpreter.onChange((context) => {
                     this.setState({ context, stateHash: v4() });
                 });
-                this.interpreter.start();
             }
         }
 
