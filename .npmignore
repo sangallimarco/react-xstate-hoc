@@ -2,6 +2,12 @@
 /public
 .vscode/
 .cache/
+.circleci/
+dist/
 images.d.ts
 tsconfig.test.json
 tsconfig.prod.json
+setupTests.ts
+jest.config.js
+tsconfig.json
+tslint.json
