@@ -17,16 +17,16 @@
     "react-test-renderer": "^16.6.0"
   },
   "scripts": {
-    "start": "react-scripts-ts start",
-    "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject",
+    "start": "parcel src/index.html",
+    "test": "jest --env=jsdom --no-cache",
+    "test-watch": "jest --watch --env=jsdom",
     "build": "rm -Rf build && tsc --project tsconfig.prod.json"
   },
   "devDependencies": {
     "@types/enzyme": "^3.1.15",
     "@types/enzyme-adapter-react-16": "^1.0.3",
     "@types/flat": "0.0.28",
-    "@types/jest": "^23.3.7",
+    "@types/jest": "^23.3.13",
     "@types/lodash": "^4.14.118",
     "@types/node": "^10.12.0",
     "@types/react": "^16.7.11",
@@ -35,11 +35,14 @@
     "@types/uuid": "^3.4.4",
     "enzyme": "^3.8.0",
     "enzyme-adapter-react-16": "^1.7.1",
+    "jest": "^24.0.0",
+    "parcel-bundler": "^1.11.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
-    "react-scripts-ts": "^4.0.8",
     "react-test-renderer": "^16.7.0",
-    "typescript": "^3.1.6"
+    "ts-jest": "^23.10.5",
+    "tslint": "^5.12.1",
+    "typescript": "^3.2.4"
   },
   "description": "HOC component with Async onEntry actions for Xstate",
   "directories": {

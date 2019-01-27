@@ -58,9 +58,9 @@ export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSche
                     cond: (ctx) => ctx.cnt < 10 // run N times
                 }
             },
-            onEntry: assign({
+            onEntry: assign((ctx) => ({
                 items: []
-            })
+            }))
         },
         [TestMachineState.PROCESSING]: {
             invoke: {

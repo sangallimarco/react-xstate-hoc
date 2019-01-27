@@ -18,6 +18,7 @@ export const withStateMachine = <
 ): React.ComponentClass<Subtract<TOriginalProps, StateMachineInjectedProps<TContext, TStateSchema, TEvent>>, StateMachineHOCState<TContext, TStateSchema>> => {
 
     type WrapperProps = Subtract<TOriginalProps, StateMachineInjectedProps<TContext, TStateSchema, TEvent>>;
+    type WrappedProps = TOriginalProps & StateMachineInjectedProps<TContext, TStateSchema, TEvent>;
 
     return class StateMachineWrapper extends React.Component<WrapperProps, StateMachineHOCState<TContext, TStateSchema>> {
 
@@ -41,8 +42,9 @@ export const withStateMachine = <
         }
 
         public render(): JSX.Element {
+            const props = { ...this.props, ...this.state } as WrappedProps;
             return (
-                <Component {...this.props} {...this.state} dispatch={this.handleDispatch} injectMachineOptions={this.setMachineOptions} />
+                <Component {...props} dispatch={this.handleDispatch} injectMachineOptions={this.setMachineOptions} />
             );
         }
 

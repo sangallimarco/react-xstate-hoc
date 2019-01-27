@@ -16,7 +16,7 @@ jest.mock('xstate-ext', () => ({
 
 let mockStart = jest.fn();
 let mockStop = jest.fn();
-jest.mock('xstate/lib/interpreter', () => ({
+jest.mock('xstate-ext/lib/interpreter', () => ({
     interpret: () => ({
         start: mockStart,
         stop: mockStop,
