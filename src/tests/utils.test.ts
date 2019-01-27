@@ -1,4 +1,4 @@
-import { normaliseStateName } from './utils';
+import { normaliseStateName } from '../lib/utils';
 
 describe('Utils', () => {
     it('normalise name', () => {
