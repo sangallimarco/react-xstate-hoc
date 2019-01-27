@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/sangallimarco/react-xstate-hoc/tree/master.svg?style=svg)](https://circleci.com/gh/sangallimarco/react-xstate-hoc/tree/master)
+
 ## React Xstate HOC
 Integrates the Xstate lib with Reactjs. Please follow this link for more details about Xstate https://xstate.js.org/docs/
 
