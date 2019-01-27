@@ -10,6 +10,10 @@ Example includes a better usage of Types for Actions and States.
 
 ```npm i react-xstate-hoc```
 
+OR
+
+```yarn add react-xstate-hoc```
+
 ### HOW TO
 
 Define your State Machine
