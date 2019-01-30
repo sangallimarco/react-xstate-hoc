@@ -1,4 +1,4 @@
-import { MachineConfig } from 'xstate-ext';
+import { MachineConfig } from 'xstate';
 
 export enum TestChildStates {
     START = 'START',

@@ -2,10 +2,10 @@ import * as React from 'react'
 import { withStateMachine } from '../lib/react-xstate-hoc';
 import { StateMachineInjectedProps } from '../lib/types';
 import { shallow, mount } from 'enzyme';
-import { MachineConfig, EventObject } from 'xstate-ext';
+import { MachineConfig, EventObject } from 'xstate';
 
 let mockWithConfig = jest.fn();
-jest.mock('xstate-ext', () => ({
+jest.mock('xstate', () => ({
     Machine: () => ({
         initialState: {
             value: 'A'
@@ -16,7 +16,7 @@ jest.mock('xstate-ext', () => ({
 
 let mockStart = jest.fn();
 let mockStop = jest.fn();
-jest.mock('xstate-ext/lib/interpreter', () => ({
+jest.mock('xstate/lib/interpreter', () => ({
     interpret: () => ({
         start: mockStart,
         stop: mockStop,

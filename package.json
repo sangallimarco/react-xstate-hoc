@@ -9,7 +9,7 @@
     "flat": "^4.1.0",
     "lodash": "^4.17.11",
     "uuid": "^3.3.2",
-    "xstate-ext": "^4.2.4-ext"
+    "xstate": "^4.3.1"
   },
   "peerDependency": {
     "react": "^16.6.0",

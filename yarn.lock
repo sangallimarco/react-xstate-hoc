@@ -6273,9 +6273,10 @@ xml-name-validator@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/xml-name-validator/-/xml-name-validator-3.0.0.tgz#6ae73e06de4d8c6e47f9fb181f78d648ad457c6a"
 
-xstate-ext@^4.2.4-ext:
-  version "4.2.4-ext"
-  resolved "https://registry.yarnpkg.com/xstate-ext/-/xstate-ext-4.2.4-ext.tgz#7e14f9b5b81fb79c2c40dd31de8e26e65b88d22e"
+xstate@^4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/xstate/-/xstate-4.3.1.tgz#54554b2116470fe630ca3b7e92ff1ce74b508ff9"
+  integrity sha512-Vhezs4f7iQ8677N8YjKhLR9P9O2QCRvnP++mnrxBDN39SC9N99/ZWdiLp+TnF4EwUt7DsgCIm2BDBVSiMCwvEw==
 
 xtend@^4.0.0, xtend@~4.0.1:
   version "4.0.1"

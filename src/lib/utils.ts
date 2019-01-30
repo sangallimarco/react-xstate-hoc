@@ -1,5 +1,5 @@
 import * as flattern from 'flat';
-import { StateValue } from 'xstate-ext';
+import { StateValue } from 'xstate';
 import { isString } from 'util';
 
 export function normaliseStateName(params: StateValue): string {

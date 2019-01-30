@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { State, EventObject, StateSchema, MachineConfig, StateValue, MachineOptions, DefaultContext, Machine } from 'xstate-ext';
-import { interpret, Interpreter } from 'xstate-ext/lib/interpreter';
+import { State, EventObject, StateSchema, MachineConfig, StateValue, MachineOptions, DefaultContext, Machine } from 'xstate';
+import { interpret, Interpreter } from 'xstate/lib/interpreter';
 import { StateMachineInjectedProps, StateMachineHOCState, Subtract, StateMachineStateName, MachineOptionsFix } from './types';
 import { v4 } from 'uuid';
 
