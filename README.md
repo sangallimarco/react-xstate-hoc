@@ -24,8 +24,8 @@ Define your State Machine
 // file: configs/test-machine.ts
 
 import { StateMachineAction } from 'react-xstate-hoc';
-import { assign } from 'xstate-ext/lib/actions';
-import { MachineConfig } from 'xstate-ext';
+import { assign } from 'xstate/lib/actions';
+import { MachineConfig } from 'xstate';
 
 export interface TestComponentState {
     items: string[];
@@ -262,8 +262,8 @@ constructor(props: TestComponentProps) {
 You can also use enums for states, actions, schema ...
 
 ```typescript
-import { assign, log } from 'xstate-ext/lib/actions';
-import { MachineConfig } from 'xstate-ext';
+import { assign, log } from 'xstate/lib/actions';
+import { MachineConfig } from 'xstate';
 import { StateMachineAction, MachineOptionsFix } from 'react-xstate-hoc';
 
 export interface TestComponentState {
