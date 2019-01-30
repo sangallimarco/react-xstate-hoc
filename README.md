@@ -1,3 +1,4 @@
+[![npm version](https://badge.fury.io/js/react-xstate-hoc.svg)](https://badge.fury.io/js/react-xstate-hoc)
 [![CircleCI](https://circleci.com/gh/sangallimarco/react-xstate-hoc/tree/master.svg?style=svg)](https://circleci.com/gh/sangallimarco/react-xstate-hoc/tree/master)
 
 ## React Xstate HOC
