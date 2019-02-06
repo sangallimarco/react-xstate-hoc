@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withStateMachine, StateMachineInjectedProps } from '../../lib';
-import { STATE_CHART, INITIAL_STATE, TestMachineEvent, TestMachineStateSchema, TestMachineAction, TestMachineState, TestMachineService } from '../configs/test-machine';
+import { STATE_CHART, INITIAL_STATE, TestMachineEvent, TestMachineStateSchema, TestMachineAction, TestMachineState, TestMachineService } from '../configs/test-base-machine';
 import { TestChildComponent } from './test-child';
 import './test.css';
 import { TestComponentState } from '../configs/test-types';

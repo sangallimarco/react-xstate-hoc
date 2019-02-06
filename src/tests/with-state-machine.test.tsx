@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { withStateMachine } from '../lib/react-xstate-hoc';
+import { withStateMachine } from '../lib/with-state-machine';
 import { StateMachineInjectedProps } from '../lib/types';
 import { shallow, mount } from 'enzyme';
 import { MachineConfig, EventObject } from 'xstate';
