@@ -21,7 +21,6 @@ export const connectStateMachine = <
 
     return class StateMachineWrapper extends React.Component<WrapperProps, StateMachineHOCState<TContext, TStateSchema>> {
 
-        public interpreter: Interpreter<TContext, TStateSchema, TEvent> = interpreter;
         public currentStateName: StateValue;
         public interpreterConnected: boolean = false;
 
@@ -48,16 +47,16 @@ export const connectStateMachine = <
 
         public initInterpreter() {
             if (!this.interpreterConnected) {
-                this.interpreter.onTransition(this.handleTransition);
-                this.interpreter.onChange(this.handleState);
+                interpreter.onTransition(this.handleTransition);
+                interpreter.onChange(this.handleState);
                 this.interpreterConnected = true;
             }
         }
 
         public stopInterpreter() {
             if (this.interpreterConnected) {
-                this.interpreter.off(this.handleTransition);
-                this.interpreter.off(this.handleState);
+                interpreter.off(this.handleTransition);
+                interpreter.off(this.handleState);
             }
         }
 
@@ -76,8 +75,8 @@ export const connectStateMachine = <
         }
 
         public handleDispatch = (action: TEvent) => {
-            if (this.interpreter) {
-                this.interpreter.send(action);
+            if (interpreter) {
+                interpreter.send(action);
             }
         };
     };
