@@ -3,6 +3,7 @@ import { State, EventObject, StateSchema, MachineConfig, StateValue, MachineOpti
 import { interpret, Interpreter } from 'xstate/lib/interpreter';
 import { StateMachineInjectedProps, StateMachineHOCState, Subtract, StateMachineStateName, MachineOptionsFix } from './types';
 import { v4 } from 'uuid';
+import { sha1 } from 'object-hash';
 
 export const withStateMachine = <
     TOriginalProps,
@@ -26,6 +27,7 @@ export const withStateMachine = <
         public stateMachine = Machine(config, {}, initialContext);
         public interpreter: Interpreter<TContext, TStateSchema, TEvent>;
         public currentStateName: StateValue;
+        public currentContextHash: string;
 
         public readonly state: StateMachineHOCState<TContext, TStateSchema> = {
             currentState: this.stateMachine.initialState.value as StateMachineStateName<TStateSchema>,
@@ -56,7 +58,7 @@ export const withStateMachine = <
                     this.handleTransition(current);
                 });
                 this.interpreter.onChange((context) => {
-                    this.setState({ context, stateHash: v4() });
+                    this.handleContext(context);
                 });
             }
         }
@@ -74,6 +76,14 @@ export const withStateMachine = <
                 this.currentStateName = value;
                 const newStateName = value as StateMachineStateName<TStateSchema>;
                 this.setState({ currentState: newStateName, stateHash: v4() });
+            }
+        }
+
+        public handleContext(context: TContext) {
+            const objectHash = sha1(context);
+            if (objectHash !== this.currentContextHash) {
+                this.setState({ context, stateHash: v4() });
+                this.currentContextHash = objectHash;
             }
         }
 
