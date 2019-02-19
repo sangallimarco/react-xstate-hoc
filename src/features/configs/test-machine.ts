@@ -17,7 +17,8 @@ export enum TestMachineAction {
     RESET = 'RESET',
     SELECT = 'SELECT',
     EXIT = 'EXIT',
-    FETCH_DATA = 'FETCH_DATA'
+    FETCH_DATA = 'FETCH_DATA',
+    LOOP = 'LOOP'
 }
 
 export interface TestMachineStateSchema {
@@ -36,6 +37,7 @@ export type TestMachineEvent =
     | { type: TestMachineAction.RESET }
     | { type: TestMachineAction.SELECT }
     | { type: TestMachineAction.EXIT }
+    | { type: TestMachineAction.LOOP }
     ;
 
 export type TestMachineEventType = StateMachineAction<TestComponentState>;
@@ -88,11 +90,9 @@ export const STATE_CHART: MachineConfig<TestComponentState, TestMachineStateSche
                         cnt: ctx.cnt + 1
                     }))
                 },
-                [TestMachineAction.SELECT]: TestMachineState.SHOW_ITEM
-            },
-            onEntry: assign((ctx) => ({
-                cnt: ctx.cnt + 1
-            }))
+                [TestMachineAction.SELECT]: TestMachineState.SHOW_ITEM,
+                [TestMachineAction.LOOP]: TestMachineState.LIST
+            }
         },
         [TestMachineState.SHOW_ITEM]: {
             on: {

@@ -44,6 +44,7 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
                 return <div>
                     <div className="test-list">
                         {this.renderItems(context.items)}
+                        <button onClick={this.handleLoop}>TEST CONTEXT FILTER</button>
                     </div>
                     <TestChildComponent onExit={this.handleReset} />
                 </div>;
@@ -67,6 +68,11 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
     private handleReset = () => {
         this.props.dispatch({ type: TestMachineAction.RESET });
     }
+
+    private handleLoop = () => {
+        this.props.dispatch({ type: TestMachineAction.LOOP });
+    }
+
 }
 
 export const TestComponent = withStateMachine(
