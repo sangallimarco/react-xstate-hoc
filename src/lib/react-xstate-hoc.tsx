@@ -80,7 +80,7 @@ export const withStateMachine = <
         }
 
         public handleContext(context: TContext) {
-            if (context != this.currentContext) {
+            if (context !== this.currentContext) {
                 this.setState({ context, stateHash: v4() });
                 this.currentContext = context;
             }
