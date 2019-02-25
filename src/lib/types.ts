@@ -10,7 +10,7 @@ export interface MachineOptionsFix<TContext, TEvent extends EventObject> { // FI
     guards?: Record<string, ConditionPredicate<TContext, TEvent>>;
     actions?: ActionFunctionMap<TContext, TEvent>;
     activities?: Record<string, ActivityConfig<TContext, TEvent>>;
-    services?: Record<string, (ctx: TContext, event: TEvent) => Promise<Partial<TContext>>>; // ServiceConfig ?
+    services?: Record<string, StateServiceBind<TContext, TEvent, Keys extends keyof TContext>>;
 }
 
 export interface StateMachineInjectedProps<TContext, TStateSchema extends StateSchema, MachineEvents extends EventObject> extends StateMachineHOCState<TContext, TStateSchema> {
@@ -23,6 +23,9 @@ export interface StateMachineAction<T> extends EventObject {
 }
 
 export type StateMachineStateName<T extends StateSchema> = keyof T['states'];
+
+export type StateServiceBind<TContext, Keys extends keyof TContext> = (ctx: TContext) => Promise<Pick<TContext, Keys>>;
+export type StateServiceBind<TContext, TEvent, Keys extends keyof TContext> = (ctx: TContext, event: TEvent) => Promise<Pick<TContext, Keys>>;
 
 export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
 
