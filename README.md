@@ -1,3 +1,4 @@
+[![npm version](https://badge.fury.io/js/react-xstate-hoc.svg)](https://badge.fury.io/js/react-xstate-hoc)
 [![CircleCI](https://circleci.com/gh/sangallimarco/react-xstate-hoc/tree/master.svg?style=svg)](https://circleci.com/gh/sangallimarco/react-xstate-hoc/tree/master)
 
 ## React Xstate HOC
@@ -24,8 +25,7 @@ Define your State Machine
 // file: configs/test-machine.ts
 
 import { StateMachineAction } from 'react-xstate-hoc';
-import { assign } from 'xstate/lib/actions';
-import { MachineConfig } from 'xstate';
+import { MachineConfig, assign } from 'xstate';
 
 export interface TestComponentState {
     items: string[];
@@ -262,8 +262,7 @@ constructor(props: TestComponentProps) {
 You can also use enums for states, actions, schema ...
 
 ```typescript
-import { assign, log } from 'xstate/lib/actions';
-import { MachineConfig } from 'xstate';
+import { MachineConfig, assign, log } from 'xstate';
 import { StateMachineAction, MachineOptionsFix } from 'react-xstate-hoc';
 
 export interface TestComponentState {

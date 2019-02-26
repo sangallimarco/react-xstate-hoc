@@ -26,6 +26,7 @@ export const withStateMachine = <
         public stateMachine = Machine(config, {}, initialContext);
         public interpreter: Interpreter<TContext, TStateSchema, TEvent>;
         public currentStateName: StateValue;
+        public currentContext: TContext | null = null;
 
         public readonly state: StateMachineHOCState<TContext, TStateSchema> = {
             currentState: this.stateMachine.initialState.value as StateMachineStateName<TStateSchema>,
@@ -39,6 +40,7 @@ export const withStateMachine = <
 
         public componentWillUnmount() {
             this.stopInterpreter();
+            this.currentContext = null;
         }
 
         public render(): JSX.Element {
@@ -56,7 +58,7 @@ export const withStateMachine = <
                     this.handleTransition(current);
                 });
                 this.interpreter.onChange((context) => {
-                    this.setState({ context, stateHash: v4() });
+                    this.handleContext(context);
                 });
             }
         }
@@ -74,6 +76,13 @@ export const withStateMachine = <
                 this.currentStateName = value;
                 const newStateName = value as StateMachineStateName<TStateSchema>;
                 this.setState({ currentState: newStateName, stateHash: v4() });
+            }
+        }
+
+        public handleContext(context: TContext) {
+            if (context !== this.currentContext) {
+                this.setState({ context, stateHash: v4() });
+                this.currentContext = context;
             }
         }
 
