@@ -23,6 +23,7 @@ export const connectStateMachine = <
 
         public currentStateName: StateValue;
         public interpreterConnected: boolean = false;
+        public currentContext: TContext | null = null;
 
         public readonly state: StateMachineHOCState<TContext, TStateSchema> = {
             currentState: interpreter.state.value as StateMachineStateName<TStateSchema>,
@@ -47,8 +48,12 @@ export const connectStateMachine = <
 
         public initInterpreter() {
             if (!this.interpreterConnected) {
-                interpreter.onTransition(this.handleTransition);
-                interpreter.onChange(this.handleState);
+                interpreter.onTransition((current) => {
+                    this.handleTransition(current);
+                });
+                interpreter.onChange((context) => {
+                    this.handleContext(context);
+                });
                 this.interpreterConnected = true;
             }
         }
@@ -62,6 +67,13 @@ export const connectStateMachine = <
 
         public handleState = (context: TContext) => {
             this.setState({ context, stateHash: v4() });
+        }
+
+        public handleContext(context: TContext) {
+            if (context !== this.currentContext) {
+                this.setState({ context, stateHash: v4() });
+                this.currentContext = context;
+            }
         }
 
         public handleTransition = (newState: State<TContext, EventObject>) => {
