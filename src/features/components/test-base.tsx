@@ -29,7 +29,7 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
         const { cnt } = context;
 
         return (<div className="test">
-            <h1>{currentState} {cnt} {label} {stateHash}</h1>
+            <h2>{currentState} {cnt} {label} {stateHash}</h2>
             <div>
                 {this.renderChild(currentState, context)}
             </div>

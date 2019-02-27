@@ -12,7 +12,7 @@ export class TestChildBaseComponent extends React.PureComponent<TestChildCompone
         const { currentState } = this.props;
 
         return <div className="test-child" >
-            <h1>CHILD COMPONENT: {currentState}</h1>
+            <h2>CHILD COMPONENT: {currentState}</h2>
             {this.renderChild(currentState)}
         </div>;
     }
