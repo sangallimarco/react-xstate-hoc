@@ -18,6 +18,10 @@ export interface StateMachineInjectedProps<TContext, TStateSchema extends StateS
     injectMachineOptions: (options: MachineOptionsFix<TContext, MachineEvents>) => void; // FIXME MachineOptions<TContext, EventObject> broken
 }
 
+export interface StateMachineConnectedProps<TContext, TStateSchema extends StateSchema, MachineEvents extends EventObject> extends StateMachineHOCState<TContext, TStateSchema> {
+    dispatch: (action: MachineEvents) => void;
+}
+
 export interface StateMachineAction<T> extends EventObject {
     data: Partial<T>
 }

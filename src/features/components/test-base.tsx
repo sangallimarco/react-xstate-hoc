@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withStateMachine, StateMachineInjectedProps } from '../../lib';
-import { STATE_CHART, INITIAL_STATE, TestMachineEvent, TestMachineStateSchema, TestMachineAction, TestMachineState, TestMachineService } from '../configs/test-machine';
+import { STATE_CHART, INITIAL_STATE, TestMachineEvent, TestMachineStateSchema, TestMachineAction, TestMachineState, TestMachineService } from '../configs/test-base-machine';
 import { TestChildComponent } from './test-child';
 import './test.css';
 import { TestComponentState } from '../configs/test-types';
@@ -29,7 +29,7 @@ export class TestBaseComponent extends React.PureComponent<TestComponentProps> {
         const { cnt } = context;
 
         return (<div className="test">
-            <h1>{currentState} {cnt} {label} {stateHash}</h1>
+            <h2>{currentState} {cnt} {label} {stateHash}</h2>
             <div>
                 {this.renderChild(currentState, context)}
             </div>
