@@ -10,9 +10,7 @@ export const connectStateMachine = <
     TContext = DefaultContext,
     TEvent extends EventObject = EventObject
 >(
-    Component: (
-        React.ComponentClass<TOriginalProps & StateMachineConnectedProps<TContext, TStateSchema, TEvent>> |
-        React.StatelessComponent<TOriginalProps & StateMachineConnectedProps<TContext, TStateSchema, TEvent>>),
+    Component: React.ComponentClass<TOriginalProps & StateMachineConnectedProps<TContext, TStateSchema, TEvent>>,
     interpreter: Interpreter<TContext, TStateSchema, TEvent>
 ): React.ComponentClass<Subtract<TOriginalProps, StateMachineConnectedProps<TContext, TStateSchema, TEvent>>, StateMachineHOCState<TContext, TStateSchema>> => {
 
@@ -27,8 +25,7 @@ export const connectStateMachine = <
 
         public readonly state: StateMachineHOCState<TContext, TStateSchema> = {
             currentState: interpreter.state.value as StateMachineStateName<TStateSchema>,
-            context: interpreter.state.context as TContext,
-            stateHash: undefined
+            context: interpreter.state.context as TContext
         }
 
         public componentDidMount() {

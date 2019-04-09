@@ -3,7 +3,7 @@ import { EventObject, StateSchema, MachineOptions } from 'xstate';
 export interface StateMachineHOCState<TContext, TStateSchema extends StateSchema> {
     currentState: StateMachineStateName<TStateSchema>;
     context: TContext,
-    stateHash: string | undefined;
+    stateHash?: string;
 }
 
 export interface StateMachineInjectedProps<TContext, TStateSchema extends StateSchema, MachineEvents extends EventObject> extends StateMachineHOCState<TContext, TStateSchema> {

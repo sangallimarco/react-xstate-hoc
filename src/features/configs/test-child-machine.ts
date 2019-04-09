@@ -21,7 +21,7 @@ export type TestChildMachineEvents =
     | { type: TestChildActions.STOP }
     | { type: TestChildActions.DEFAULT };
 
-export const STATE_CHART: MachineConfig<{}, TestChildMachineStateSchema, TestChildMachineEvents> = {
+export const STATE_CHART: MachineConfig<TestChildComponentState, TestChildMachineStateSchema, TestChildMachineEvents> = {
     initial: TestChildStates.START,
     states: {
         [TestChildStates.START]: {
