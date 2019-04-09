@@ -88,7 +88,7 @@ export const withStateMachine = <
 
         public setMachineOptions = (configOptions: Partial<MachineOptions<TContext, TEvent>>) => {
             if (!this.interpreter) {
-                this.stateMachine = this.stateMachine.withConfig(configOptions); // FIXME casting type to original MachineOptions for now
+                this.stateMachine = this.stateMachine.withConfig(configOptions);
                 this.initInterpreter();
             }
         };
