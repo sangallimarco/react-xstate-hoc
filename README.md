@@ -4,6 +4,9 @@
 ## React Xstate HOC
 Integrates the Xstate lib with Reactjs. Please follow this link for more details about Xstate https://xstate.js.org/docs/
 
+## DEMO
+Demo app is available here: https://stackblitz.com/edit/react-xstate-hoc-test
+
 ## Example
 Please find the example here: https://github.com/sangallimarco/react-xstate-hoc/tree/master/src/features
 
