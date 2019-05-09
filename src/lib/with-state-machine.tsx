@@ -67,12 +67,12 @@ export const withStateMachine = <
         }
 
         public handleTransition(newState: State<TContext, EventObject>) {
-            const { changed, value } = newState;
+            const { changed, value, context } = newState;
 
             if (changed && value !== this.currentStateName) {
                 this.currentStateName = value;
                 const newStateName = value as StateMachineStateName<TStateSchema>;
-                this.setState({ currentState: newStateName, stateHash: v4() });
+                this.setState({ currentState: newStateName, context, stateHash: v4() });
             }
         }
 
