@@ -1,6 +1,6 @@
 {
   "name": "react-xstate-hoc",
-  "version": "1.8.5",
+  "version": "1.9.0",
   "main": "build/lib/index.js",
   "types": "build/lib/index.d.ts",
   "author": "Marco Sangalli <sangalli.marco@gmail.com>",
