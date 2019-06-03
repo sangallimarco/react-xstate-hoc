@@ -3,6 +3,7 @@ import { State, EventObject, StateSchema, MachineConfig, StateValue, MachineOpti
 import { interpret, Interpreter } from 'xstate/lib/interpreter';
 import { StateMachineInjectedProps, StateMachineHOCState, Subtract, StateMachineStateName } from './types';
 import { v4 } from 'uuid';
+import {Subject} from 'rxjs';
 
 export const withStateMachine = <
     TOriginalProps,
@@ -12,7 +13,8 @@ export const withStateMachine = <
 >(
     Component: React.ComponentClass<TOriginalProps & StateMachineInjectedProps<TContext, TStateSchema, TEvent>>,
     config: MachineConfig<TContext, TStateSchema, TEvent>,
-    initialContext: TContext
+    initialContext: TContext,
+    channel?: Subject<TEvent>
 ): React.ComponentClass<Subtract<TOriginalProps, StateMachineInjectedProps<TContext, TStateSchema, TEvent>>, StateMachineHOCState<TContext, TStateSchema>> => {
 
     type WrapperProps = Subtract<TOriginalProps, StateMachineInjectedProps<TContext, TStateSchema, TEvent>>;
@@ -33,11 +35,19 @@ export const withStateMachine = <
 
         public componentDidMount() {
             this.initInterpreter();
+            if (channel) {
+                channel.subscribe((action: TEvent) => {
+                    this.handleDispatch(action);
+                })
+            }
         }
 
         public componentWillUnmount() {
             this.stopInterpreter();
             this.currentContext = null;
+            if (channel) {
+                channel.unsuscribe();
+            }
         }
 
         public render(): JSX.Element {
