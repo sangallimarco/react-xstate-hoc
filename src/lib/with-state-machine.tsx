@@ -46,7 +46,7 @@ export const withStateMachine = <
             this.stopInterpreter();
             this.currentContext = null;
             if (channel) {
-                channel.unsuscribe();
+                channel.unsubscribe();
             }
         }
 
