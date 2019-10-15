@@ -1,5 +1,6 @@
 [![npm version](https://badge.fury.io/js/react-xstate-hoc.svg)](https://badge.fury.io/js/react-xstate-hoc)
 [![CircleCI](https://circleci.com/gh/sangallimarco/react-xstate-hoc/tree/master.svg?style=svg)](https://circleci.com/gh/sangallimarco/react-xstate-hoc/tree/master)
+[![DeepScan grade](https://deepscan.io/api/teams/5710/projects/7542/branches/78483/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=5710&pid=7542&bid=78483)
 
 ## React Xstate HOC
 Integrates the Xstate lib with Reactjs. Please follow this link for more details about Xstate https://xstate.js.org/docs/
